@@ -861,6 +861,7 @@ async function enablePush(){
   toast("이제 아침 7시에 알림이 와요 🔔"); openSettings();
 }
 
+registerSW();   // 열자마자 등록해야 안드로이드 크롬에 "앱 설치"가 떠요
 boot();
 </script>
 </body>

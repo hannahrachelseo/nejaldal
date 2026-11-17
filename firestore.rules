@@ -1,0 +1,25 @@
+rules_version = '2';
+// 우리 가족 키(비밀번호로 만든 64자리) 아래에만 읽고 쓸 수 있어요.
+// 키를 모르면 목록 조회도, 읽기/쓰기도 할 수 없어요. (비밀번호를 바꾸면 아래 값도 바꿔야 해요)
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function famOk(f) { return f == '1646e69245efef95f44d1565414f91211253b941b1dd8bc06f8c843049820dd3'; }
+    match /families/{fam}/events/{id} {
+      allow read, delete: if famOk(fam);
+      allow create, update: if famOk(fam)
+        && request.resource.data.start is string
+        && request.resource.data.type in ['birthday','trip','anniv','wbh','grandpa','custom']
+        && request.resource.data.size() < 30;
+    }
+    match /families/{fam}/members/{name} {
+      allow read: if famOk(fam);
+      allow write: if famOk(fam) && request.resource.data.photo.size() < 200000;
+    }
+    match /families/{fam}/meta/{id} {
+      allow read, write: if famOk(fam);
+    }
+    match /families/{fam}/subs/{id} {
+      allow create, update: if famOk(fam);   // 알림 구독 등록만 가능 (읽기는 서버만)
+    }
+  }
+}

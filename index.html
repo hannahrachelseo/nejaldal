@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>너잘달</title>
+<meta name="theme-color" content="#FFF5F7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="너잘달">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<script src="config.js"></script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<style>@font-face{font-family:"BMHanna11";src:local("배달의민족 한나는 열한살"),local("BMHANNA11yrsold"),url("https://cdn.jsdelivr.net/npm/@kfonts/bm-hanna-11yrs@0.2.1/BMHANNA_11yrs_ttf.woff2") format("woff2"),url("https://cdn.jsdelivr.net/npm/@kfonts/bm-hanna-11yrs@0.2.1/BMHANNA_11yrs_ttf.woff") format("woff");font-weight:400;font-display:swap}</style>
+<style>
+:root{
+  --bg:#FFF5F7; --paper:#FFFFFF; --card:#FFFFFF; --ink:#5B3A45; --sub:#B88C9A; --line:#F9DCE4;
+  --apricot:#FB6F92; --apricot-d:#E8517A; --apricot-l:#FFE5EC;
+  --mint:#7DD3B4; --mint-d:#3FA882; --mint-l:#E3F6EE;
+  --lav:#C3A6F0; --lav-d:#9472D6; --lav-l:#F2EBFD;
+  --pink:#FF8FAB; --pink-d:#EC5C84; --pink-l:#FFE0E9;
+  --sky:#8CC8F2; --sky-d:#4B9AD8; --sky-l:#E5F3FD;
+  --butter:#FFD36E; --butter-d:#D99A12; --butter-l:#FFF4D6;
+  --peach:#FFB199; --peach-d:#EC7B5B; --peach-l:#FFEDE6;
+  --sun:#F0567E; --sat:#5B9BE0;
+  --r:22px; --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom);
+  --shadow:0 6px 18px rgba(236,92,132,.10), 0 1px 3px rgba(236,92,132,.08);
+  --hand:"BMHanna11",-apple-system,"Apple SD Gothic Neo",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-synthesis:none}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"BMHanna11",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-size:16px;font-weight:400;-webkit-font-smoothing:antialiased}
+body{overflow-anchor:none;min-height:100vh;padding-top:var(--safe-t);padding-bottom:calc(var(--safe-b) + 100px);
+  background-image:radial-gradient(circle at 1px 1px, rgba(251,111,146,.16) 1px, transparent 0);background-size:18px 18px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,select,textarea{font:inherit;font-size:16px;color:inherit}
+b,strong,h1,h2,h3{font-family:var(--hand);font-weight:700}
+input,select{font-family:-apple-system,"Apple SD Gothic Neo",sans-serif;font-weight:400}
+.hidden{display:none!important}
+
+/* ---------- 얼굴 스티커 & 아이콘 ---------- */
+.ic{border-radius:50%;display:grid;place-items:center;position:relative;container-type:size;flex:none}
+.ic svg{width:58%;height:58%}
+.ic .emo{font-size:56cqw;line-height:1}
+.ic .ini{font-family:var(--hand);font-size:32cqw;white-space:nowrap;letter-spacing:-.5px}
+.ic.face{background:none!important}
+.ic.face img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(200,70,110,.22))}
+.ic.face.noimg{border:2px solid #fff;box-shadow:0 2px 5px rgba(200,70,110,.18)}
+.who-grid .ic.face.noimg,.checks .ic.face.noimg,.iconpick .ic.face.noimg,.ev>.ic.face.noimg,.me-btn .ic.face.noimg,.banner .ic.face.noimg{border-width:3px}
+.ic .badge{position:absolute;right:-8%;bottom:-8%;width:46%;height:46%;border-radius:50%;display:grid;place-items:center;border:max(1.5px,4cqw) solid #fff}
+.ic .badge svg{width:70%;height:70%}
+.stack{display:flex;flex-direction:row-reverse;justify-content:flex-end}
+.stack .sf{width:30px;height:30px;margin-left:-9px}
+.stack .sf:last-child{margin-left:0}
+.stack .more-n{order:-1;align-self:center;font-family:var(--hand);font-size:12px;color:var(--sub);margin-left:4px}
+.filter{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin:0 -2px;scrollbar-width:none}
+.filter::-webkit-scrollbar{display:none}
+.filter button{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--hand);font-size:12px;color:var(--sub);opacity:.55;transition:.15s}
+.filter button .ic{width:42px;height:42px}
+.filter button.on{opacity:1;color:var(--apricot-d)}
+.filter .all{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:var(--shadow);font-size:13px;color:var(--apricot-d)}
+.likes{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--pink-d)}
+.tilt-0{transform:rotate(-4deg)} .tilt-1{transform:rotate(3deg)} .tilt-2{transform:rotate(-2deg)} .tilt-3{transform:rotate(4deg)} .tilt-4{transform:rotate(-3deg)}
+
+/* ---------- 잠금 화면 ---------- */
+.gate{position:fixed;inset:0;background:var(--bg);background-image:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(var(--safe-t) + 24px) 28px calc(var(--safe-b) + 24px);z-index:50;text-align:center;overflow:auto}
+.gate .logo{width:88px;height:88px;border-radius:28px;box-shadow:var(--shadow);margin-bottom:16px;transform:rotate(-4deg)}
+.gate h1{font-size:38px;margin:0 0 6px;letter-spacing:-.5px}
+.gate p{color:var(--sub);margin:0 0 22px;line-height:1.55;font-size:15px}
+.dots{display:flex;gap:12px;justify-content:center;height:18px;margin:6px 0 4px}
+.dots i{width:14px;height:14px;border-radius:50%;background:var(--line);transition:.15s}
+.dots i.on{background:var(--apricot);transform:scale(1.15)}
+.dots.shake,.pwbox.shake{animation:shake .4s}
+.pwbox{position:relative;width:100%;max-width:300px}
+.pwbox .txt{max-width:none;padding-right:52px;letter-spacing:2px;font-size:18px}
+.pwbox .eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:22px;padding:6px}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.pad{display:grid;grid-template-columns:repeat(3,76px);gap:14px 22px;margin-top:22px;justify-content:center}
+.pad button{width:76px;height:76px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);font-family:var(--hand);font-size:30px;display:grid;place-items:center;transition:transform .08s}
+.pad button:active{transform:scale(.92);background:var(--apricot-l)}
+.pad .fn{background:none;box-shadow:none;font-size:15px;color:var(--sub);font-family:inherit}
+.pad .ok{background:var(--apricot);color:#fff}
+.pad .ok svg,.pad .fn svg{width:28px;height:28px}
+.gate .foot{margin-top:26px;font-size:13px;color:var(--sub);line-height:1.6}
+.gate input.txt{width:100%;max-width:300px;padding:15px 18px;border-radius:16px;border:2px solid var(--line);background:#fff;text-align:center;letter-spacing:4px;outline:none}
+.gate input.txt:focus{border-color:var(--apricot)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:14px 22px;border-radius:18px;background:var(--apricot);color:#fff;font-family:var(--hand);font-size:18px;box-shadow:0 6px 14px rgba(251,111,146,.3)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--apricot-l);color:var(--apricot-d);box-shadow:none}
+.btn.block{width:100%;max-width:300px;margin-top:12px}
+.err{color:var(--sun);font-size:14px;min-height:20px;margin-top:10px}
+.code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#fff;border:1px dashed var(--line);border-radius:12px;padding:10px;word-break:break-all;text-align:left;width:100%;max-width:340px;margin:6px 0 12px;user-select:all}
+.who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 10px;width:100%;max-width:330px}
+.who-grid button{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--hand);font-size:18px}
+.who-grid .ic{width:78px;height:78px}
+.who-grid button:active .ic{transform:scale(.92) rotate(0)}
+
+/* ---------- 상단 ---------- */
+header{position:sticky;top:0;z-index:10;padding:12px 18px 8px;display:flex;align-items:flex-end;gap:8px;background:linear-gradient(var(--bg) 75%, rgba(255,245,247,0))}
+header .title{flex:1;min-width:0;white-space:nowrap}
+header .title small{display:flex;align-items:center;gap:5px;overflow:hidden;text-overflow:ellipsis;font-size:13px;color:var(--sub);margin-bottom:2px}
+header .title small svg{width:13px;height:13px;color:var(--pink-d)}
+header .title b{font-size:34px;letter-spacing:-1px;line-height:1}
+header .title span{font-family:var(--hand);color:var(--sub);font-size:18px;margin-left:6px}
+.iconbtn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--card);box-shadow:var(--shadow)}
+.iconbtn svg{width:18px;height:18px}
+.todaybtn{padding:0 12px;width:auto;border-radius:999px;font-family:var(--hand);font-size:16px;color:var(--apricot-d)}
+.me-btn{width:46px;height:46px;padding:0;margin-left:2px}
+.me-btn .ic{width:100%;height:100%}
+
+/* ---------- 오늘 배너 ---------- */
+.banner{margin:4px 16px 6px;background:var(--apricot-l);border-radius:var(--r);padding:14px 16px;display:flex;gap:12px;align-items:center;animation:drop .4s ease;border:2px dashed #FFB3C6}
+.banner .bi{width:44px;height:44px;flex:none}
+.banner .bi .ic{width:100%;height:100%}
+.banner .bt{flex:1;font-size:17px;line-height:1.35;min-width:0}
+.banner .bt small{display:block;color:var(--apricot-d);font-size:12px;margin-bottom:2px;font-family:inherit}
+.banner .x{color:var(--apricot-d);font-size:24px;padding:0 4px}
+@keyframes drop{from{transform:translateY(-10px);opacity:0}}
+
+/* ---------- 달력 ---------- */
+.cal{margin:8px 12px 0;background:var(--paper);border-radius:28px;padding:10px 6px 8px;box-shadow:var(--shadow);touch-action:pan-y}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:13px;color:var(--sub);padding:4px 0 8px;font-family:var(--hand)}
+.dow div:first-child{color:var(--sun)} .dow div:last-child{color:var(--sat)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:24px;row-gap:3px;min-height:88px;position:relative;padding-bottom:6px}
+.week+.week{border-top:1.5px dashed var(--line)}
+.day{grid-row:1/-1;position:relative;z-index:0;border-radius:14px;cursor:pointer;text-align:center}
+.day .n{display:inline-grid;place-items:center;width:28px;height:28px;margin-top:3px;font-family:var(--hand);font-size:16px;border-radius:50%}
+.day.sun .n{color:var(--sun)} .day.sat .n{color:var(--sat)}
+.day.other{opacity:.3}
+.day.today .n{background:var(--apricot);color:#fff;box-shadow:0 3px 8px rgba(251,111,146,.4)}
+.day.sel{background:var(--apricot-l)}
+.day .more{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:11px;color:var(--sub);font-family:var(--hand)}
+.bar{z-index:1;margin:0 2px;height:24px;border-radius:12px;font-size:12px;display:flex;align-items:center;gap:3px;padding:0 6px 0 2px;overflow:hidden;white-space:nowrap;pointer-events:none;font-family:var(--hand)}
+.bar .ic{width:18px;height:18px}
+.bar .ic.face{width:20px;height:20px}
+.bar .t{overflow:hidden;text-overflow:ellipsis}
+.bar.one{justify-content:center;padding:0}
+.bar.one .t{display:none}
+.bar.one .ic,.bar.one .ic.face{width:22px;height:22px}
+.bar.cont-l{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:0}
+.bar.cont-r{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:0}
+
+/* ---------- 목록 ---------- */
+.section{margin:22px 16px 0}
+.section h3{font-size:19px;margin:0 0 10px 4px;display:flex;align-items:center;gap:6px}
+.section h3 .sw-dot{width:8px;height:8px;border-radius:50%;background:var(--apricot)}
+.ev{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:20px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;width:100%;text-align:left}
+.ev:active{transform:scale(.99)}
+.ev>.ic{width:46px;height:46px}
+.ev .body{flex:1;min-width:0}
+.ev .tt{font-family:var(--hand);font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev .dd{font-size:13.5px;color:var(--sub);margin-top:1px}
+.ev .chips{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.chip{font-size:12px;padding:3px 9px;border-radius:999px;background:#FDEEF2;color:var(--sub)}
+.chip.on{background:var(--mint-l);color:var(--mint-d)}
+.ev .side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
+.ev .by{width:30px;height:30px}
+.dday{font-family:var(--hand);font-size:14px;color:var(--apricot-d);background:var(--apricot-l);padding:3px 10px;border-radius:999px}
+.dday.now{background:var(--apricot);color:#fff}
+.empty{color:var(--sub);font-size:14px;padding:18px;text-align:center;background:var(--paper);border-radius:20px;border:2px dashed var(--line)}
+
+/* ---------- 플로팅 버튼 ---------- */
+.fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--safe-b) + 20px);height:58px;padding:0 28px 0 22px;border-radius:999px;background:var(--apricot);color:#fff;font-family:var(--hand);font-size:19px;box-shadow:0 10px 24px rgba(251,111,146,.4);z-index:20;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.fab span{font-size:30px;line-height:1;margin-top:-3px}
+.fab:active{transform:translateX(-50%) scale(.96)}
+
+/* ---------- 바텀시트 ---------- */
+.sheet-bg{position:fixed;inset:0;background:rgba(120,40,70,.25);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
+.sheet-bg.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--bg);border-radius:30px 30px 0 0;max-height:92vh;overflow:auto;padding:10px 18px calc(var(--safe-b) + 22px);transform:translateY(105%);visibility:hidden;transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s .28s;max-width:640px;margin:0 auto}
+.sheet.open{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.grab{width:44px;height:5px;border-radius:3px;background:#F6CBD7;margin:0 auto 14px}
+.sheet h2{font-size:24px;margin:0 0 16px;display:flex;align-items:center;justify-content:space-between}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.cat{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 4px 12px;border-radius:20px;background:var(--card);border:2.5px solid transparent;font-family:var(--hand);font-size:14px;line-height:1.2;text-align:center;box-shadow:var(--shadow)}
+.cat .ic{width:46px;height:46px}
+.cat.on{border-color:var(--apricot);background:var(--apricot-l)}
+.field{margin-bottom:16px}
+.field>label{display:block;font-family:var(--hand);font-size:15px;color:var(--sub);margin:0 0 7px 4px}
+.field input[type=text],.field input[type=date],.field select{width:100%;padding:13px 15px;border-radius:16px;border:2px solid var(--line);background:#fff;outline:none;-webkit-appearance:none;appearance:none;min-height:52px}
+.field input:focus,.field select:focus{border-color:var(--apricot)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row2>*{min-width:0}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-radius:18px;padding:14px 15px;margin-bottom:10px;font-family:var(--hand);font-size:17px;box-shadow:var(--shadow)}
+.toggle small{display:block;font-family:"BMHanna11",sans-serif;font-weight:400;color:var(--sub);font-size:12.5px;margin-top:2px}
+.sw{position:relative;width:52px;height:32px;flex:none}
+.sw input{opacity:0;width:0;height:0}
+.sw span{position:absolute;inset:0;background:#F6D6DF;border-radius:999px;transition:.2s}
+.sw span:before{content:"";position:absolute;width:26px;height:26px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.sw input:checked+span{background:var(--mint)}
+.sw input:checked+span:before{transform:translateX(20px)}
+.sw input:disabled+span{opacity:.75}
+.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.checks label{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border:2.5px solid transparent;border-radius:20px;padding:14px 4px 10px;font-family:var(--hand);font-size:17px;position:relative;box-shadow:var(--shadow)}
+.checks label .ic{width:58px;height:58px;filter:grayscale(.7);opacity:.7;transition:.15s}
+.checks input{position:absolute;opacity:0}
+.checks label.on{border-color:var(--mint);background:var(--mint-l)}
+.checks label.on .ic{filter:none;opacity:1}
+.checks label .tick{position:absolute;top:8px;right:9px;width:22px;height:22px;border-radius:50%;background:#F6D6DF;color:#fff;font-size:13px;display:grid;place-items:center;font-family:sans-serif}
+.checks label.on .tick{background:var(--mint-d)}
+.iconpick{display:flex;gap:10px;flex-wrap:wrap}
+.iconpick button{width:52px;height:52px;border-radius:50%;padding:0;position:relative}
+.iconpick button .ic{width:100%;height:100%}
+.iconpick button.on:after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2.5px solid var(--apricot)}
+.iconpick button small{position:absolute;bottom:-20px;left:-10px;right:-10px;white-space:nowrap;font-size:11.5px;color:var(--sub)}
+.iconpick.named{row-gap:26px;padding-bottom:8px}
+.dt-head{display:flex;gap:14px;align-items:center;margin:-4px 0 14px}
+.dt-head>.ic{width:64px;height:64px}
+.dt-title{font-family:var(--hand);font-size:24px;line-height:1.2}
+.dt-memo{background:#fff;border-radius:16px;padding:12px 14px;margin-bottom:12px;box-shadow:var(--shadow);font-size:15px;line-height:1.5}
+.dt-row{margin-bottom:12px}
+.lb{display:block;font-family:var(--hand);font-size:14px;color:var(--sub);margin:0 0 8px 4px}
+.dt-people{display:flex;gap:12px;flex-wrap:wrap}
+.dt-people span{display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--hand);font-size:12px;color:var(--sub)}
+.dt-people .ic{width:46px;height:46px}
+.dt-like{display:flex;align-items:center;gap:12px;padding:10px 0 14px;border-bottom:1.5px dashed var(--line);margin-bottom:12px}
+.likebtn{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;background:#fff;box-shadow:var(--shadow);font-family:var(--hand);font-size:15px;color:var(--pink-d)}
+.likebtn .hrt{font-size:20px;line-height:1}
+.likebtn.on{background:var(--pink-l)}
+.likebtn:active .hrt{transform:scale(1.4)}
+.cmt{display:flex;gap:10px;margin-bottom:12px}
+.ic.cf{width:34px;height:34px}
+.cb{flex:1;background:#fff;border-radius:4px 16px 16px 16px;padding:9px 12px;box-shadow:var(--shadow);min-width:0}
+.ch{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub)}
+.ch b{font-size:14px;color:var(--ink)}
+.cdel{margin-left:auto;font-size:12px;color:var(--sub)}
+.ct{font-size:15px;line-height:1.45;margin-top:2px;word-break:break-word;white-space:pre-wrap}
+.cmt-in{display:flex;gap:8px;align-items:center;background:#fff;border-radius:999px;padding:6px 6px 6px 8px;box-shadow:var(--shadow);margin-top:4px}
+.cmt-in input{flex:1;border:0;outline:none;background:none;min-width:0;padding:8px 2px}
+.cmt-in button{width:40px;height:40px;border-radius:50%;background:var(--apricot);color:#fff;font-size:16px}
+.actions{display:flex;gap:10px;margin-top:20px}
+.actions .btn{flex:1}
+.btn.del{background:var(--pink-l);color:var(--pink-d);flex:0 0 auto;box-shadow:none}
+.note{font-size:12.5px;color:var(--sub);line-height:1.5;margin:6px 4px 12px}
+.list-btn{display:flex;align-items:center;gap:12px;width:100%;background:#fff;border-radius:18px;padding:13px 14px;margin-bottom:10px;font-family:var(--hand);font-size:17px;text-align:left;box-shadow:var(--shadow)}
+.list-btn .ic{width:42px;height:42px}
+.list-btn small{display:block;color:var(--sub);font-size:12.5px;font-family:"Gowun Dodum",sans-serif}
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 96px);transform:translateX(-50%);background:#5A4A42;color:#fff;padding:11px 20px;border-radius:999px;font-size:15px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.demo-tag{position:fixed;top:calc(var(--safe-t) + 2px);right:16px;font-size:10px;background:var(--butter-l);color:var(--butter-d);padding:2px 8px;border-radius:999px;z-index:15}
+@media (min-width:700px){.cal,.section,.banner{max-width:680px;margin-left:auto;margin-right:auto}header{max-width:700px;margin:0 auto}}
+</style>
+</head>
+<body>
+
+<!-- 잠금 / 설정 화면 -->
+<div id="gate" class="gate hidden"></div>
+
+<div id="app" class="hidden">
+  <header>
+    <div class="title"><small><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.3-9.2C1.4 8.4 3.6 5 7 5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8C19.5 16.4 12 21 12 21z"/></svg>너나 잘해라 🍓</small><b id="mTitle"></b><span id="yTitle"></span></div>
+    <button class="iconbtn todaybtn" id="goToday">오늘</button>
+    <button class="iconbtn" id="prevM" aria-label="이전 달"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="iconbtn" id="nextM" aria-label="다음 달"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></button>
+    <button class="me-btn" id="meBtn" aria-label="설정"></button>
+  </header>
+  <div id="bannerWrap"></div>
+  <div class="cal" id="cal">
+    <div class="dow"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+    <div id="weeks"></div>
+  </div>
+  <div class="section"><h3><i class="sw-dot"></i><span id="selTitle"></span></h3><div id="selList"></div></div>
+  <div class="section"><h3><i class="sw-dot" style="background:var(--mint)"></i>다가오는 가족 행사</h3><div class="filter" id="filter"></div><div id="upList"></div></div>
+  <button class="fab" id="addBtn"><span>+</span>일정 추가</button>
+</div>
+
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><div id="sheetBody"></div></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+const CFG = window.APP_CONFIG;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const DEMO = !CFG.firebase || !CFG.firebase.projectId;
+
+/* =================== 행사 종류 & 아이콘 =================== */
+const SVG = {
+  birthday:`<path d="M4 20.5h16M5.5 20.5v-6.8a1.3 1.3 0 0 1 1.3-1.3h10.4a1.3 1.3 0 0 1 1.3 1.3v6.8"/><path d="M5.5 16c1.1.9 2.1.9 3.2 0s2.1-.9 3.3 0 2.1.9 3.3 0 2.1-.9 3.2 0"/><path d="M9 12.4V10M15 12.4V10"/><path d="M9 5.6c.7.8.8 1.5.4 2a.6.6 0 0 1-.8 0c-.4-.5-.3-1.2.4-2zM15 5.6c.7.8.8 1.5.4 2a.6.6 0 0 1-.8 0c-.4-.5-.3-1.2.4-2z" fill="currentColor"/>`,
+  trip:`<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>`,
+  anniv:`<circle cx="9" cy="14.6" r="4.9"/><circle cx="15" cy="14.6" r="4.9"/><path d="M10.2 6.4 11 4.8h2l.8 1.6L12 8.6z" fill="currentColor"/>`,
+  wbh:`<path d="M3.5 11.2 12 4.5l8.5 6.7"/><path d="M6 9.8V20h12V9.8"/><path d="M12 17.4s-3-1.8-3-3.6a1.5 1.5 0 0 1 3-.6 1.5 1.5 0 0 1 3 .6c0 1.8-3 3.6-3 3.6z" fill="currentColor"/>`,
+  grandpa:`<circle cx="12" cy="13.6" r="6.6"/><circle cx="9.6" cy="12.8" r="1.4"/><circle cx="14.4" cy="12.8" r="1.4"/><path d="M11 12.8h2"/><path d="M9.5 16.5c1-.8 2-.8 2.5 0 .5-.8 1.5-.8 2.5 0"/><path d="M8.8 7.4 9.2 4.2l1.6 1.5L12 3.6l1.2 2.1 1.6-1.5.4 3.2" fill="currentColor"/>`,
+  custom:`<path d="M12 4l2.3 4.8 5.2.7-3.8 3.6 1 5.2L12 15.8l-4.7 2.5 1-5.2-3.8-3.6 5.2-.7z"/>`,
+};
+const CATS = {
+  birthday:{label:"생일", bg:"var(--pink-l)", fg:"var(--pink-d)", autoNotify:true, yearly:true},
+  trip:    {label:"여행", bg:"var(--sky-l)", fg:"var(--sky-d)", autoNotify:true, yearly:false},
+  anniv:   {label:"엄마 아빠\n결혼기념일", bg:"var(--lav-l)", fg:"var(--lav-d)", autoNotify:true, yearly:true, title:"엄마 아빠 결혼기념일"},
+  wbh:     {label:"Way Back\nHome", bg:"var(--mint-l)", fg:"var(--mint-d)", autoNotify:false, yearly:false, title:"Way Back Home"},
+  grandpa: {label:"외할아버지\n생신", bg:"var(--butter-l)", fg:"var(--butter-d)", autoNotify:true, yearly:true, title:"외할아버지 생신"},
+  custom:  {label:"직접 입력", bg:"var(--peach-l)", fg:"var(--peach-d)", autoNotify:false, yearly:false},
+};
+const EMOJIS = ["⭐","🎉","🍖","🏥","⚽","🎓","📚","💼","🎁","🙏","🎵","🐶","🍰","🚗","☕","❤️"];
+// 가족별 파스텔 색 [배경, 글자]
+const MEMBER_COLORS = [["var(--sky-l)","var(--sky-d)"],["var(--pink-l)","var(--pink-d)"],["var(--peach-l)","var(--peach-d)"],["var(--mint-l)","var(--mint-d)"],["var(--lav-l)","var(--lav-d)"],["var(--butter-l)","var(--butter-d)"],["#FDEEF2","#8F8378"]];
+
+let memberPhotos = {};   // name -> 이미지 주소 (Firebase 사진 > config.faces)
+const people = () => CFG.members.filter(m => !(CFG.pets||[]).includes(m));
+function memberIdx(name){ const i = CFG.members.indexOf(name); return i<0 ? 6 : i; }
+function memberColor(name){ return MEMBER_COLORS[memberIdx(name)%MEMBER_COLORS.length]; }
+function facePhoto(name){ return memberPhotos[name] || (CFG.faces||{})[name]; }
+function faceHTML(name, cls="ic"){
+  const p = facePhoto(name), tilt = `tilt-${memberIdx(name)%5}`;
+  if (p) return `<div class="${cls} face ${tilt}"><img src="${esc(p)}" alt="${esc(name)}"></div>`;
+  const [bg, fg] = memberColor(name);
+  return `<div class="${cls} face noimg ${tilt}" style="background:${bg}!important;color:${fg}"><span class="ini">${esc((name||"?").slice(-2))}</span></div>`;
+}
+function catIconHTML(type){
+  const c = CATS[type];
+  return `<div class="ic" style="background:${c.bg};color:${c.fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${SVG[type]}</svg></div>`;
+}
+// 이 일정과 관련된 가족
+function relatedOf(ev){
+  if (ev.type==="birthday") return ev.who && CFG.members.includes(ev.who) ? [ev.who] : [];
+  if (ev.type==="wbh") return CFG.wayBackHome.filter(n => ev.wbh?.[n]);
+  if (ev.type==="anniv") return ["아빠","엄마"].filter(n => CFG.members.includes(n));
+  return (ev.people||[]).filter(n => CFG.members.includes(n));
+}
+function withBadge(faceHtml, type){
+  const c = CATS[type];
+  return faceHtml.replace(/<\/div>$/, `<span class="badge" style="background:${c.bg};color:${c.fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SVG[type]}</svg></span></div>`);
+}
+function facesStack(names, max=4){
+  if (!names.length) return "";
+  const more = names.length > max ? `<span class="more-n">+${names.length-max}</span>` : "";
+  return `<div class="stack">${names.slice(0,max).map(n => faceHTML(n,"ic sf")).join("")}${more}</div>`;
+}
+function evIconHTML(ev){
+  const rel = relatedOf(ev);
+  if (ev.type === "trip" && rel.length) return withBadge(faceHTML(rel[0]), "trip");
+  if (ev.type === "birthday" && rel.length) return withBadge(faceHTML(rel[0]), "birthday");
+  if (ev.type !== "custom") return catIconHTML(ev.type);
+  const icon = ev.icon || {kind:"face", value: ev.createdBy};
+  if (icon.kind === "emoji") return `<div class="ic" style="background:var(--apricot-l)"><span class="emo">${esc(icon.value)}</span></div>`;
+  return faceHTML(icon.value || ev.createdBy);
+}
+// 달력 막대 색 [배경, 글자]
+function evColor(ev){
+  if (ev.type !== "custom") return [CATS[ev.type].bg, CATS[ev.type].fg];
+  const who = ev.icon?.kind==="face" ? ev.icon.value : ev.createdBy;
+  return memberColor(who);
+}
+
+/* =================== 날짜 도우미 =================== */
+const pad = n => String(n).padStart(2,"0");
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d, 12); };
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const diffDays = (a,b) => Math.round((parse(b)-parse(a))/86400000);
+const todayStr = () => ymd(new Date());
+const KDOW = ["일","월","화","수","목","금","토"];
+function fmtRange(s,e){
+  const a = parse(s), b = parse(e);
+  const f = d => `${d.getMonth()+1}월 ${d.getDate()}일(${KDOW[d.getDay()]})`;
+  return s===e ? f(a) : `${f(a)} ~ ${a.getFullYear()!==b.getFullYear()?b.getFullYear()+"년 ":""}${f(b)}`;
+}
+// 반복 일정 펼치기: [from, to] 기간과 겹치는 실제 발생일 목록
+// ----- 음력 → 양력 (한국 음력, 브라우저 내장 달력 사용) -----
+const lunarCache = {};
+let dangiFmt = null;
+try { dangiFmt = new Intl.DateTimeFormat("en-u-ca-dangi", {timeZone:"UTC", year:"numeric", month:"numeric", day:"numeric"});
+      if (dangiFmt.resolvedOptions().calendar !== "dangi") dangiFmt = null; } catch { dangiFmt = null; }
+function lunarToSolar(y, m, d){
+  const k = `${y}-${m}-${d}`; if (k in lunarCache) return lunarCache[k];
+  let res = null, last = null;
+  if (dangiFmt) for (let t = Date.UTC(y,0,10); t < Date.UTC(y+1,2,5); t += 86400000){
+    const p = {}; for (const x of dangiFmt.formatToParts(new Date(t))) p[x.type] = x.value;
+    if (+p.relatedYear !== y || p.month !== String(m)) { if (last) break; continue; }
+    last = t; if (+p.day === d) { res = t; break; }
+  }
+  if (!res && last) res = last;            // 30일이 없는 달이면 그 달 마지막 날
+  const out = res ? new Date(res).toISOString().slice(0,10) : null;
+  return lunarCache[k] = out;
+}
+// 반복 일정 펼치기: [from, to] 기간과 겹치는 실제 발생일 목록
+function occurrences(ev, from, to){
+  const out = [], len = Math.max(0, diffDays(ev.start, ev.end || ev.start));
+  const push = s => { if (!s) return; const e = ymd(addDays(parse(s), len)); if (e >= from && s <= to) out.push({ev, start:s, end:e}); };
+  if (!ev.yearly) { push(ev.start); return out; }
+  const [y0, m, d] = ev.start.split("-").map(Number);
+  for (let y = Math.max(y0, +from.slice(0,4)-1); y <= +to.slice(0,4); y++){
+    if (ev.lunar) { push(lunarToSolar(y, m, d)); continue; }
+    let dd = d; if (m===2 && d===29 && !(y%4===0 && (y%100!==0 || y%400===0))) dd = 28;
+    push(`${y}-${pad(m)}-${pad(dd)}`);
+  }
+  return out;
+}
+
+/* =================== 저장소 (Firebase / 데모) =================== */
+async function sha256(t){ const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+const passHash = pw => sha256("fc-pass:" + pw);
+const famKey  = pw => sha256("fc-family:" + pw);
+
+let store;
+async function makeStore(fam){
+  if (DEMO){
+    const K = "fc_demo_"+fam.slice(0,8), ls = k => JSON.parse(localStorage.getItem(K+k) || "{}");
+    const subs = [];
+    const emit = () => subs.forEach(cb => cb.k==="events" ? cb(Object.values(ls("ev"))) : cb(ls("mem")));
+    return {
+      onEvents(cb){ cb.k="events"; subs.push(cb); cb(Object.values(ls("ev"))); },
+      onMembers(cb){ cb.k="mem"; subs.push(cb); cb(ls("mem")); },
+      async saveEvent(ev){ const all = ls("ev"); const {likes, comments, ...data} = ev; all[ev.id] = {...data, likes: all[ev.id]?.likes||{}, comments: all[ev.id]?.comments||[]}; localStorage.setItem(K+"ev", JSON.stringify(all)); emit(); },
+      async deleteEvent(id){ const all = ls("ev"); delete all[id]; localStorage.setItem(K+"ev", JSON.stringify(all)); emit(); },
+      async savePhoto(name, url){ const m = ls("mem"); m[name] = {photo:url}; localStorage.setItem(K+"mem", JSON.stringify(m)); emit(); },
+      async saveSub(){ },
+      async getFlag(k){ return !!ls("meta")[k]; },
+      async toggleLike(id, name, on){ const all = ls("ev"), e = all[id]; if (!e) return; e.likes = e.likes||{}; if (on) e.likes[name] = Date.now(); else delete e.likes[name]; localStorage.setItem(K+"ev", JSON.stringify(all)); emit(); },
+      async addComment(id, c){ const all = ls("ev"), e = all[id]; if (!e) return; (e.comments = e.comments||[]).push(c); localStorage.setItem(K+"ev", JSON.stringify(all)); emit(); },
+      async delComment(id, c){ const all = ls("ev"), e = all[id]; if (!e) return; e.comments = (e.comments||[]).filter(x => x.id!==c.id); localStorage.setItem(K+"ev", JSON.stringify(all)); emit(); },
+      async setFlag(k){ const m = ls("meta"); m[k] = true; localStorage.setItem(K+"meta", JSON.stringify(m)); },
+    };
+  }
+  const V = "10.12.2";
+  const {initializeApp} = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+  const F = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+  const app = initializeApp(CFG.firebase);
+  let db;
+  try { db = F.initializeFirestore(app, {localCache: F.persistentLocalCache()}); } catch { db = F.getFirestore(app); }
+  const col = n => F.collection(db, "families", fam, n);
+  return {
+    onEvents(cb){ F.onSnapshot(col("events"), s => cb(s.docs.map(d => d.data()))); },
+    onMembers(cb){ F.onSnapshot(col("members"), s => { const m = {}; s.docs.forEach(d => m[d.id] = d.data()); cb(m); }); },
+    // 수정 저장 시 좋아요·댓글은 건드리지 않음 (그 사이 달린 댓글이 사라지지 않게)
+    saveEvent(ev){
+      const {likes, comments, ...data} = ev;
+      for (const k of ["who","wbh","people","lunar","icon","memo","yearly"]) if (!(k in data)) data[k] = F.deleteField();
+      return F.setDoc(F.doc(col("events"), ev.id), data, {merge:true});
+    },
+    deleteEvent: id => F.deleteDoc(F.doc(col("events"), id)),
+    savePhoto: (name, url) => F.setDoc(F.doc(col("members"), name), {photo:url, updatedAt:Date.now()}),
+    saveSub: (id, data) => F.setDoc(F.doc(col("subs"), id), data),
+    async getFlag(k){ return (await F.getDoc(F.doc(col("meta"), k))).exists(); },
+    // 좋아요·댓글은 문서 전체를 덮어쓰지 않고 그 부분만 바꿔서, 여러 명이 동시에 눌러도 안전해요
+    toggleLike: (id, name, on) => F.updateDoc(F.doc(col("events"), id), new F.FieldPath("likes", name), on ? Date.now() : F.deleteField()),
+    addComment: (id, c) => F.updateDoc(F.doc(col("events"), id), {comments: F.arrayUnion(c)}),
+    delComment: (id, c) => F.updateDoc(F.doc(col("events"), id), {comments: F.arrayRemove(c)}),
+    setFlag: k => F.setDoc(F.doc(col("meta"), k), {at:Date.now()}),
+  };
+}
+
+/* =================== 잠금 화면 =================== */
+const gate = $("#gate");
+const LOGO = `<img class="logo" src="icons/icon-192.png" alt="">`;
+function showGate(html){ gate.innerHTML = html; gate.classList.remove("hidden"); $("#app").classList.add("hidden"); }
+
+async function boot(){
+  const savedFam = localStorage.getItem("fc_fam");
+  const hash = CFG.passwordHash || localStorage.getItem("fc_demo_hash");
+  if (!hash) return setupScreen();
+  if (savedFam && localStorage.getItem("fc_hash") === hash) return afterLogin(savedFam);
+  lockScreen(hash);
+}
+function setupScreen(){
+  showGate(`${LOGO}<h1>가족 비밀번호 만들기</h1>
+    <p>가족 모두가 함께 쓸 비밀번호를 정해주세요.<br>숫자 4자리 이상을 추천해요.</p>
+    <input class="txt" id="p1" type="password" inputmode="numeric" placeholder="비밀번호" autocomplete="new-password">
+    <input class="txt" id="p2" type="password" inputmode="numeric" placeholder="한 번 더" style="margin-top:10px" autocomplete="new-password">
+    <button class="btn block" id="mk">만들기</button><div class="err" id="er"></div><div id="out" style="width:100%;display:flex;flex-direction:column;align-items:center"></div>`);
+  $("#mk").onclick = async () => {
+    const a = $("#p1").value.trim(), b = $("#p2").value.trim();
+    if (a.length < 4) return $("#er").textContent = "4자리 이상 입력해주세요";
+    if (a !== b) return $("#er").textContent = "두 비밀번호가 달라요";
+    $("#er").textContent = "";
+    const h = await passHash(a), f = await famKey(a);
+    $("#out").innerHTML = `<p style="margin:14px 0 4px;color:var(--ink);font-weight:700">① config.js 의 passwordHash 에 붙여넣기</p><div class="code">${h}</div>
+      <p style="margin:0 0 4px;color:var(--ink);font-weight:700">② GitHub 비밀값 FAMILY_KEY 에 붙여넣기</p><div class="code">${f}</div>
+      ${DEMO ? `<button class="btn ghost block" id="demoGo">이 비밀번호로 데모 체험하기</button>` : ""}`;
+    if (DEMO) $("#demoGo").onclick = () => { localStorage.setItem("fc_demo_hash", h); lockScreen(h); };
+  };
+}
+function lockScreen(hash){
+  showGate(`${LOGO}<h1>${esc(CFG.appName)}</h1><p>우리 집 가훈: 너나 잘해라 🍓<br>처음 한 번만 가족 비밀번호를 입력해주세요</p>
+    <div class="pwbox"><input id="pw" class="txt" type="password" placeholder="비밀번호" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <button type="button" class="eye" id="eye" aria-label="비밀번호 보기">🙈</button></div>
+    <button class="btn block" id="go">들어가기</button><div class="err" id="er"></div>
+    <div class="foot">회원가입 · 로그인 없이<br>이 폰에서는 다음부터 바로 열려요</div>`);
+  const go = async () => {
+    const pw = $("#pw").value.trim(); if (!pw) return;
+    if ((await passHash(pw)) !== hash){
+      $("#er").textContent = "비밀번호가 맞지 않아요"; $("#pw").value = "";
+      const d = $(".pwbox"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake"); return;
+    }
+    const f = await famKey(pw);
+    localStorage.setItem("fc_fam", f); localStorage.setItem("fc_hash", hash);
+    try { navigator.storage?.persist?.(); } catch {}
+    afterLogin(f);
+  };
+  $("#go").onclick = go; $("#pw").onkeydown = e => { $("#er").textContent = ""; if (e.key==="Enter") go(); };
+  $("#eye").onclick = () => { const i = $("#pw"); const show = i.type==="password"; i.type = show ? "text" : "password"; $("#eye").textContent = show ? "🐵" : "🙈"; };
+}
+function whoScreen(){
+  showGate(`${LOGO}<h1>누구세요?</h1><p>내가 추가한 일정에는<br>내 얼굴 스티커가 붙어요</p>
+    <div class="who-grid">${people().map(m => `<button data-m="${esc(m)}">${faceHTML(m)}${esc(m)}</button>`).join("")}</div>`);
+  gate.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { localStorage.setItem("fc_me", b.dataset.m); startApp(); });
+}
+
+const bdayTitle = n => `${n} ${["아빠","엄마","할머니","할아버지","외할머니","외할아버지"].includes(n) ? "생신" : "생일"}`;
+/* ----- config.js 의 가족 생일을 처음 한 번만 달력에 넣기 ----- */
+async function seedBirthdays(){
+  const list = CFG.birthdays || [];
+  for (const b of list){
+    const flag = `seed-${b.name}`;
+    if (await store.getFlag(flag)) continue;   // 한 번 넣은 생일은 지워도 다시 안 생겨요
+    const g = b.type === "grandpa";
+    const ev = {id:`seed-bday-${b.name}`, type:g?"grandpa":"birthday", who:b.name, title:g?"외할아버지 생신":bdayTitle(b.name), start:b.date, end:b.date,
+      yearly:true, lunar:!!b.lunar, notify:true, wbh:null, memo:b.memo||"", createdBy:"", updatedAt:Date.now()};
+    delete ev.wbh; if (g) delete ev.who; await store.saveEvent(ev);
+    await store.setFlag(flag);
+  }
+}
+
+/* =================== 메인 =================== */
+let events = [], view = new Date(), selected = todayStr(), started = false;
+const me = () => localStorage.getItem("fc_me");
+
+async function afterLogin(fam){
+  try { store = await makeStore(fam); }
+  catch(e){ showGate(`${LOGO}<h1>연결 오류</h1><p>인터넷 연결 또는 config.js 의 Firebase 설정을 확인해주세요.</p><button class="btn" onclick="location.reload()">다시 시도</button>`); return; }
+  store.onMembers(m => { memberPhotos = {}; for (const k in m) if (m[k].photo) memberPhotos[k] = m[k].photo; if (started) render(); });
+  store.onEvents(list => { events = list; if (started){ render(); _onEv(); if (detailId) openDetail(detailId, detailStart); } });
+  seedBirthdays().catch(e => console.warn("seed", e));
+  if (!me()) whoScreen(); else startApp();
+}
+function startApp(){
+  gate.classList.add("hidden"); $("#app").classList.remove("hidden");
+  if (DEMO && !$(".demo-tag")) document.body.insertAdjacentHTML("beforeend", `<div class="demo-tag">데모 모드 · 이 기기에만 저장</div>`);
+  started = true; view = new Date(); view.setDate(1); render(); showTodayBanner();
+  registerSW();
+  const p = new URLSearchParams(location.search).get("d"); if (p) { selected = p; view = parse(p); view.setDate(1); render(); }
+}
+
+function render(){
+  $("#mTitle").textContent = `${view.getMonth()+1}월`;
+  $("#yTitle").textContent = `${view.getFullYear()}`;
+  $("#meBtn").innerHTML = faceHTML(me());
+  renderMonth(); renderSelected(); renderUpcoming();
+}
+
+function renderMonth(){
+  const first = new Date(view.getFullYear(), view.getMonth(), 1, 12);
+  const start = addDays(first, -first.getDay());
+  const last = new Date(view.getFullYear(), view.getMonth()+1, 0, 12);
+  const weeksN = Math.ceil((first.getDay() + last.getDate())/7);
+  const today = todayStr(), MAXL = 3;
+  let html = "";
+  for (let w=0; w<weeksN; w++){
+    const ws = ymd(addDays(start, w*7)), we = ymd(addDays(start, w*7+6));
+    const occ = events.flatMap(ev => occurrences(ev, ws, we))
+      .sort((a,b) => a.start.localeCompare(b.start) || diffDays(b.start,b.end) - diffDays(a.start,a.end));
+    const lanes = [], bars = [], hidden = Array(7).fill(0);
+    for (const o of occ){
+      const c0 = Math.max(0, diffDays(ws, o.start)), c1 = Math.min(6, diffDays(ws, o.end));
+      let lane = lanes.findIndex(l => l.every(([a,b]) => c1 < a || c0 > b));
+      if (lane < 0){ lanes.push([]); lane = lanes.length-1; }
+      lanes[lane].push([c0,c1]);
+      if (lane >= MAXL){ for (let c=c0;c<=c1;c++) hidden[c]++; continue; }
+      const cls = (o.start < ws ? " cont-l":"") + (o.end > we ? " cont-r":"") + (c0===c1 ? " one":"");
+      bars.push(`<div class="bar${cls}" style="grid-column:${c0+1}/${c1+2};grid-row:${lane+2};background:${evColor(o.ev)[0]};color:${evColor(o.ev)[1]}">${evIconHTML(o.ev)}<span class="t">${esc(shortTitle(o.ev))}</span></div>`);
+    }
+    let days = "";
+    for (let i=0;i<7;i++){
+      const d = addDays(start, w*7+i), s = ymd(d);
+      const cls = ["day", i===0?"sun":"", i===6?"sat":"", d.getMonth()!==view.getMonth()?"other":"", s===today?"today":"", s===selected?"sel":""].join(" ");
+      days += `<div class="${cls}" data-d="${s}" style="grid-column:${i+1}"><span class="n">${d.getDate()}</span>${hidden[i]?`<span class="more">+${hidden[i]}</span>`:""}</div>`;
+    }
+    html += `<div class="week" style="grid-template-rows:32px repeat(${Math.min(MAXL,Math.max(lanes.length,2))},24px) ${hidden.some(Boolean)?"14px":""}">${days}${bars.join("")}</div>`;
+  }
+  $("#weeks").innerHTML = html;
+  $("#weeks").querySelectorAll(".day").forEach(el => el.onclick = () => {
+    if (selected === el.dataset.d) return openEditor(null, el.dataset.d);
+    selected = el.dataset.d; render();
+  });
+}
+function shortTitle(ev){
+  if (ev.type==="wbh"){ const who = CFG.wayBackHome.filter(n => ev.wbh?.[n]); return who.length ? who.join("·")+" 귀가" : "Way Back Home"; }
+  return ev.title || CATS[ev.type].label;
+}
+function evCard(o){
+  const ev = o.ev, today = todayStr();
+  const dd = diffDays(today, o.start);
+  const now = o.start <= today && o.end >= today;
+  const badge = now ? "오늘" : dd > 0 ? `D-${dd}` : "";
+  let chips = "";
+  if (ev.type==="wbh") chips = CFG.wayBackHome.map(n => `<span class="chip ${ev.wbh?.[n]?"on":""}">${ev.wbh?.[n]?"✓ ":""}${esc(n)}</span>`).join("");
+  if (ev.lunar) chips += `<span class="chip" style="background:var(--lav-l);color:var(--lav-d)">음력 ${+ev.start.slice(5,7)}.${+ev.start.slice(8)}</span>`;
+  if (ev.notify) chips += `<span class="chip">🔔 아침 7시</span>`;
+  if (ev.yearly && !ev.lunar) chips += `<span class="chip">매년</span>`;
+  const nl = Object.keys(ev.likes||{}).length, nc = (ev.comments||[]).length;
+  if (nl) chips += `<span class="chip" style="background:var(--pink-l);color:var(--pink-d)">♥ ${nl}</span>`;
+  if (nc) chips += `<span class="chip" style="background:var(--sky-l);color:var(--sky-d)">💬 ${nc}</span>`;
+  return `<button class="ev" data-id="${esc(ev.id)}" data-s="${o.start}">${evIconHTML(ev)}<div class="body"><div class="tt">${esc(ev.title || CATS[ev.type].title || CATS[ev.type].label)}</div>
+    <div class="dd">${fmtRange(o.start,o.end)}${ev.memo?` · ${esc(ev.memo)}`:""}</div>${chips?`<div class="chips">${chips}</div>`:""}</div>
+    <div class="side">${badge?`<span class="dday ${now?"now":""}">${badge}</span>`:""}${facesStack(relatedOf(ev))}</div></button>`;
+}
+function bindCards(root){ root.querySelectorAll(".ev").forEach(b => b.onclick = () => openDetail(b.dataset.id, b.dataset.s)); }
+let detailId = null, detailStart = null;
+function timeAgo(t){ const m = Math.floor((Date.now()-t)/60000); if (m<1) return "방금"; if (m<60) return `${m}분 전`; const h = Math.floor(m/60); if (h<24) return `${h}시간 전`; const d = Math.floor(h/24); return d<7 ? `${d}일 전` : new Date(t).toLocaleDateString("ko-KR",{month:"long",day:"numeric"}); }
+function openDetail(id, start){
+  const ev = events.find(e => e.id===id); if (!ev) return closeSheet();
+  detailId = id; detailStart = start || ev.start;
+  const occ = occurrences(ev, detailStart, detailStart)[0] || {start:ev.start, end:ev.end||ev.start};
+  const rel = relatedOf(ev), likes = ev.likes||{}, liked = !!likes[me()], likers = Object.keys(likes);
+  const comments = (ev.comments||[]).slice().sort((a,b)=>a.at-b.at);
+  const keepDraft = $("#cmtIn") ? $("#cmtIn").value : "";
+  openSheet(`<h2><span></span><button class="iconbtn" id="cx" aria-label="닫기">✕</button></h2>
+    <div class="dt-head">${evIconHTML(ev)}<div><div class="dt-title">${esc(ev.title || CATS[ev.type].title || CATS[ev.type].label)}</div>
+      <div class="dd">${fmtRange(occ.start, occ.end)}${ev.lunar?` · 음력 ${+ev.start.slice(5,7)}월 ${+ev.start.slice(8)}일`:""}</div></div></div>
+    ${ev.memo?`<div class="dt-memo">${esc(ev.memo)}</div>`:""}
+    ${rel.length?`<div class="dt-row"><span class="lb">함께하는 가족</span><div class="dt-people">${rel.map(n=>`<span>${faceHTML(n)}<small>${esc(n)}</small></span>`).join("")}</div></div>`:""}
+    <div class="dt-like"><button class="likebtn ${liked?"on":""}" id="likeBtn" aria-label="좋아요"><span class="hrt">${liked?"♥":"♡"}</span> 좋아요 ${likers.length||""}</button>
+      <div class="stack">${likers.slice(0,6).map(n=>faceHTML(n,"ic sf")).join("")}</div></div>
+    <div class="dt-cmts"><div class="lb">댓글 ${comments.length||""}</div>
+      ${comments.length ? comments.map(c=>`<div class="cmt">${faceHTML(c.by,"ic cf")}<div class="cb"><div class="ch"><b>${esc(c.by)}</b><span>${timeAgo(c.at)}</span>${c.by===me()?`<button class="cdel" data-c="${esc(c.id)}">삭제</button>`:""}</div><div class="ct">${esc(c.text)}</div></div></div>`).join("")
+        : `<div class="note" style="text-align:center;margin:10px 0">첫 댓글을 남겨보세요 💌</div>`}</div>
+    <div class="cmt-in">${faceHTML(me(),"ic cf")}<input type="text" id="cmtIn" placeholder="댓글 달기…" maxlength="300" value="${esc(keepDraft)}"><button id="cmtSend" aria-label="보내기">➤</button></div>
+    <div class="actions"><button class="btn ghost" id="editBtn">수정하기</button></div>
+    ${ev.createdBy?`<p class="note" style="text-align:center;margin-top:10px">${esc(ev.createdBy)}님이 등록${ev.updatedBy&&ev.updatedBy!==ev.createdBy?` · ${esc(ev.updatedBy)}님이 수정`:""}</p>`:""}`);
+  $("#cx").onclick = closeSheet;
+  $("#editBtn").onclick = () => { detailId = null; openEditor(ev); };
+  $("#likeBtn").onclick = async () => { try { await store.toggleLike(ev.id, me(), !liked); } catch { toast("인터넷 연결을 확인해주세요"); } };
+  const send = async () => {
+    const t = $("#cmtIn").value.trim(); if (!t) return;
+    $("#cmtIn").value = "";
+    try { await store.addComment(ev.id, {id:crypto.randomUUID(), by:me(), text:t, at:Date.now()}); } catch { toast("댓글 저장 실패"); }
+  };
+  $("#cmtSend").onclick = send; $("#cmtIn").onkeydown = e => { if (e.key==="Enter" && !e.isComposing) send(); };
+  $("#sheetBody").querySelectorAll(".cdel").forEach(b => b.onclick = async () => {
+    if (!confirm("댓글을 지울까요?")) return; const c = (ev.comments||[]).find(x=>x.id===b.dataset.c); if (c) await store.delComment(ev.id, c); });
+}
+
+function renderSelected(){
+  const d = parse(selected);
+  $("#selTitle").textContent = `${d.getMonth()+1}월 ${d.getDate()}일 ${KDOW[d.getDay()]}요일`;
+  const list = events.flatMap(ev => occurrences(ev, selected, selected));
+  $("#selList").innerHTML = list.length ? list.map(evCard).join("") : `<div class="empty">일정이 없어요 · 날짜를 한 번 더 누르면 바로 추가돼요</div>`;
+  bindCards($("#selList"));
+}
+let filterWho = "";
+function renderUpcoming(){
+  $("#filter").innerHTML = `<button class="${filterWho?"":"on"}" data-w=""><span class="all">전체</span>모두</button>` +
+    CFG.members.map(m => `<button class="${filterWho===m?"on":""}" data-w="${esc(m)}">${faceHTML(m)}${esc(m)}</button>`).join("");
+  $("#filter").querySelectorAll("button").forEach(b => b.onclick = () => { filterWho = b.dataset.w; renderUpcoming(); });
+  const t = todayStr(), to = ymd(addDays(new Date(), filterWho ? 366 : 120));
+  let list = events.flatMap(ev => occurrences(ev, t, to)).sort((a,b)=>a.start.localeCompare(b.start));
+  if (filterWho) list = list.filter(o => relatedOf(o.ev).includes(filterWho));
+  list = list.slice(0, filterWho ? 20 : 8);
+  $("#upList").innerHTML = list.length ? list.map(evCard).join("") : `<div class="empty">${filterWho ? `앞으로 1년 동안 ${esc(filterWho)} 관련 일정이 없어요` : "앞으로 120일 동안 등록된 행사가 없어요"}</div>`;
+  bindCards($("#upList"));
+}
+
+/* ----- 오늘 배너 (앱 열 때) ----- */
+function showTodayBanner(){
+  const t = todayStr();
+  const list = events.flatMap(ev => occurrences(ev, t, t));
+  const key = "fc_banner_" + t;
+  if (!list.length || sessionStorage.getItem(key)) { $("#bannerWrap").innerHTML = ""; return; }
+  const txt = list.map(o => `${shortTitle(o.ev)}`).join(", ");
+  $("#bannerWrap").innerHTML = `<div class="banner"><div class="bi">${evIconHTML(list[0].ev)}</div><div class="bt"><small>오늘의 가족 행사</small><b>${esc(txt)}</b></div><button class="x" aria-label="닫기">×</button></div>`;
+  $("#bannerWrap .x").onclick = () => { sessionStorage.setItem(key,"1"); $("#bannerWrap").innerHTML=""; };
+}
+let bannerTimer; const _onEv = () => { clearTimeout(bannerTimer); bannerTimer = setTimeout(showTodayBanner, 300); };
+
+/* ----- 날짜 바뀜 감지: 자정이 지나면 자동 갱신 ----- */
+let lastDay = todayStr();
+const tick = () => { if (!started) return; const t = todayStr(); if (t !== lastDay){ if (selected===lastDay) selected=t; lastDay=t; view=new Date(); view.setDate(1); render(); showTodayBanner(); } };
+setInterval(tick, 30000); document.addEventListener("visibilitychange", tick);
+
+/* ----- 달 이동 & 스와이프 ----- */
+const move = n => { view = new Date(view.getFullYear(), view.getMonth()+n, 1); render(); };
+$("#prevM").onclick = () => move(-1); $("#nextM").onclick = () => move(1);
+$("#goToday").onclick = () => { view = new Date(); view.setDate(1); selected = todayStr(); render(); };
+let sx=0, sy=0;
+$("#cal").addEventListener("touchstart", e => { sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
+$("#cal").addEventListener("touchend", e => { const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy; if (Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5) move(dx<0?1:-1); });
+
+/* =================== 바텀시트 =================== */
+function openSheet(html){ $("#sheetBody").innerHTML = html; $("#sheet").scrollTop = 0; $("#sheet").classList.add("open"); $("#sheetBg").classList.add("open"); }
+function closeSheet(){ detailId = null; $("#sheet").classList.remove("open"); $("#sheetBg").classList.remove("open"); }
+$("#sheetBg").onclick = closeSheet;
+function toast(t){ const el = $("#toast"); el.textContent = t; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"), 1800); }
+
+/* ----- 일정 추가/수정 ----- */
+$("#addBtn").onclick = () => openEditor(null, selected);
+function openEditor(ev, date){
+  const isNew = !ev;
+  const st = ev ? structuredClone(ev) : {id: crypto.randomUUID(), type:"birthday", title:"", start:date||todayStr(), end:date||todayStr(), yearly:true, notify:true, wbh:{}, people:[], memo:"", icon:{kind:"face", value:me()}, createdBy:me()};
+  let birthdayWho = st.who || "";
+  if (!birthdayWho && st.type==="birthday" && / 생[일신]$/.test(st.title||"")) birthdayWho = st.title.slice(0,-3);
+  let etcMode = !!birthdayWho && !CFG.members.includes(birthdayWho);
+  const LUNAR_OK = ["birthday","grandpa","anniv"];
+
+  const draw = () => {
+    const c = CATS[st.type];
+    const autoN = c.autoNotify;
+    openSheet(`<h2>${isNew?"새 가족 일정":"일정 수정"}<button class="iconbtn" id="cx" aria-label="닫기">✕</button></h2>
+      <div class="cats">${Object.keys(CATS).map(k => `<button class="cat ${k===st.type?"on":""}" data-k="${k}">${catIconHTML(k)}${esc(CATS[k].label).replace("\n","<br>")}</button>`).join("")}</div>
+
+      ${st.type==="birthday" ? `<div class="field"><label>누구 생일인가요?</label><div class="iconpick named" id="bwhoPick">
+        ${CFG.members.map(m=>`<button data-m="${esc(m)}" class="${!etcMode && m===birthdayWho?"on":""}">${faceHTML(m)}<small>${esc(m)}</small></button>`).join("")}
+        <button data-m="__etc" class="${etcMode?"on":""}"><div class="ic" style="background:#FDEEF2;color:#8F8378"><span class="ini" style="font-size:30cqw">+</span></div><small>그 외</small></button></div></div>
+        <div class="field ${etcMode?"":"hidden"}" id="betcW"><input type="text" id="betc" placeholder="이름 (예: 이모)" value="${esc(etcMode?birthdayWho:"")}"></div>` : ""}
+
+      ${st.type==="trip" || st.type==="custom" ? `<div class="field"><label>${st.type==="trip"?"여행 이름":"일정 이름"}</label><input type="text" id="ttl" placeholder="${st.type==="trip"?"예) 제주도 가족여행":"예) 할머니댁 김장"}" value="${esc(st.title)}"></div>` : ""}
+
+      ${st.type==="wbh" ? `<div class="field"><label>누가 집에 오나요? (체크)</label><div class="checks">${CFG.wayBackHome.map(n=>`<label class="${st.wbh?.[n]?"on":""}"><input type="checkbox" data-n="${esc(n)}" ${st.wbh?.[n]?"checked":""}><span class="tick">✓</span>${faceHTML(n)}${esc(n)}</label>`).join("")}</div></div>` : ""}
+
+      ${LUNAR_OK.includes(st.type) ? `<label class="toggle"><div>음력으로 입력<small>매년 양력 날짜로 자동 변환해서 달력에 표시해요</small></div><span class="sw"><input type="checkbox" id="lun" ${st.lunar?"checked":""}><span></span></span></label>` : ""}
+      ${st.lunar ? `<div class="field"><label>음력 날짜 ${st.type==="anniv"?"(결혼한 날)":"(태어난 날)"}</label><input type="date" id="sd" value="${st.start}">
+        <p class="note" id="lunNote"></p></div>`
+      : `<div class="row2"><div class="field"><label>시작일</label><input type="date" id="sd" value="${st.start}"></div>
+      <div class="field"><label>종료일</label><input type="date" id="ed" value="${st.end}"></div></div>`}
+
+      ${st.type==="trip" || st.type==="custom" ? `<div class="field"><label>누구와 관련된 일정인가요? (여러 명 선택)</label><div class="iconpick named" id="peoplePick">
+        ${CFG.members.map(m=>`<button data-m="${esc(m)}" class="${(st.people||[]).includes(m)?"on":""}">${faceHTML(m)}<small>${esc(m)}</small></button>`).join("")}</div></div>` : ""}
+
+      ${st.type==="custom" ? `<div class="field"><label>아이콘</label><div class="iconpick">
+        ${CFG.members.map(m=>`<button data-ik="face" data-iv="${esc(m)}" class="${st.icon?.kind==="face"&&st.icon.value===m?"on":""}" title="${esc(m)}">${faceHTML(m)}</button>`).join("")}
+        ${EMOJIS.map(e=>`<button data-ik="emoji" data-iv="${e}" class="${st.icon?.kind==="emoji"&&st.icon.value===e?"on":""}"><div class="ic" style="background:var(--apricot-l)"><span class="emo">${e}</span></div></button>`).join("")}
+      </div><p class="note">기본은 일정을 추가한 사람의 얼굴이에요</p></div>` : ""}
+
+      ${st.type!=="wbh" && st.type!=="trip" && !st.lunar ? `<label class="toggle"><div>매년 반복<small>생일·기념일은 해마다 자동으로 표시돼요</small></div><span class="sw"><input type="checkbox" id="yr" ${st.yearly?"checked":""}><span></span></span></label>` : ""}
+
+      <label class="toggle"><div>아침 7시 알림 배너<small>${autoN ? "이 행사는 자동으로 알림이 가요" : "켜면 시작일 아침 7시에 가족 모두에게 알림"}</small></div><span class="sw"><input type="checkbox" id="nt" ${autoN||st.notify?"checked":""} ${autoN?"disabled":""}><span></span></span></label>
+
+      <div class="field"><label>메모 (선택)</label><input type="text" id="memo" placeholder="예) 케이크 예약 완료" value="${esc(st.memo)}"></div>
+
+      <div class="actions">${!isNew?`<button class="btn del" id="del">삭제</button>`:""}<button class="btn" id="sv">${isNew?"추가하기":"저장하기"}</button></div>
+      ${!isNew && st.createdBy ? `<p class="note" style="text-align:center;margin-top:12px">${esc(st.createdBy)}님이 추가${st.updatedBy && st.updatedBy!==st.createdBy?` · ${esc(st.updatedBy)}님이 수정`:""}</p>` : ""}`);
+
+    const sync = () => {
+      if ($("#ttl")) st.title = $("#ttl").value;
+      if ($("#memo")) st.memo = $("#memo").value;
+      if ($("#sd")) st.start = $("#sd").value; if ($("#ed")) st.end = $("#ed").value;
+      if ($("#yr")) st.yearly = $("#yr").checked;
+      if ($("#nt") && !CATS[st.type].autoNotify) st.notify = $("#nt").checked;
+      if (etcMode && $("#betc")) birthdayWho = $("#betc").value;
+      if ($("#lun")) st.lunar = $("#lun").checked;
+      if (st.lunar) st.end = st.start;
+    };
+    $("#cx").onclick = closeSheet;
+    $("#sheetBody").querySelectorAll(".cat").forEach(b => b.onclick = () => {
+      sync(); const k = b.dataset.k; if (k===st.type) return;
+      if (st.type==="trip" || st.type==="custom") st._lastTitle = st.title;
+      st.type = k; st.yearly = CATS[k].yearly; st.notify = CATS[k].autoNotify; if (!LUNAR_OK.includes(k)) st.lunar = false;
+      st.title = (k==="trip"||k==="custom") ? (st._lastTitle||"") : "";
+      draw();
+    });
+    const lunNote = () => { if (!$("#lunNote")) return; const v = $("#sd").value; if (!v) return;
+      const [,m,d] = v.split("-").map(Number), y = new Date().getFullYear();
+      const a = lunarToSolar(y,m,d), b = lunarToSolar(y+1,m,d), f = x => x ? `${+x.slice(5,7)}월 ${+x.slice(8)}일` : "?";
+      $("#lunNote").textContent = dangiFmt ? `음력 ${m}월 ${d}일 → 올해 양력 ${f(a)} · 내년 ${f(b)}` : "이 기기는 음력 변환을 지원하지 않아요"; };
+    $("#sd").onchange = () => { if ($("#ed") && $("#ed").value < $("#sd").value) $("#ed").value = $("#sd").value; lunNote(); };
+    lunNote();
+    $("#lun") && ($("#lun").onchange = () => { sync(); if (st.lunar){ st.yearly = true; } draw(); });
+    $("#peoplePick") && $("#peoplePick").querySelectorAll("button").forEach(b => b.onclick = () => {
+      const set = new Set(st.people||[]); set.has(b.dataset.m) ? set.delete(b.dataset.m) : set.add(b.dataset.m);
+      st.people = CFG.members.filter(m => set.has(m)); b.classList.toggle("on", set.has(b.dataset.m)); });
+    $("#bwhoPick") && $("#bwhoPick").querySelectorAll("button").forEach(b => b.onclick = () => {
+      etcMode = b.dataset.m === "__etc"; birthdayWho = etcMode ? ($("#betc").value||"") : b.dataset.m;
+      $("#bwhoPick").querySelectorAll("button").forEach(x => x.classList.toggle("on", x===b));
+      $("#betcW").classList.toggle("hidden", !etcMode); if (etcMode) $("#betc").focus(); });
+    $("#sheetBody").querySelectorAll(".checks input").forEach(i => i.onchange = () => { st.wbh = st.wbh||{}; st.wbh[i.dataset.n] = i.checked; i.closest("label").classList.toggle("on", i.checked); });
+    $("#sheetBody").querySelectorAll(".iconpick button").forEach(b => b.onclick = () => { st.icon = {kind:b.dataset.ik, value:b.dataset.iv}; $("#sheetBody").querySelectorAll(".iconpick button").forEach(x=>x.classList.toggle("on", x===b)); });
+    $("#del") && ($("#del").onclick = async () => { if (!confirm("이 일정을 삭제할까요?")) return; await store.deleteEvent(st.id); closeSheet(); toast("삭제했어요"); });
+    $("#sv").onclick = async () => {
+      sync();
+      if (!st.start) return toast("시작일을 골라주세요");
+      if (!st.end || st.end < st.start) st.end = st.start;
+      if (st.type==="birthday"){ if (!birthdayWho.trim()) return toast("누구 생일인지 골라주세요"); st.title = bdayTitle(birthdayWho.trim()); st.who = birthdayWho.trim(); }
+      else if (CATS[st.type].title) st.title = CATS[st.type].title;
+      else if (!st.title.trim()) return toast("이름을 입력해주세요");
+      if (st.type==="wbh" && !CFG.wayBackHome.some(n=>st.wbh?.[n])) return toast("집에 오는 사람을 체크해주세요");
+      if (CATS[st.type].autoNotify) st.notify = true;
+      if (st.type!=="custom") delete st.icon; else if (!st.icon) st.icon = {kind:"face", value:st.createdBy||me()};
+      if (st.type!=="wbh") delete st.wbh;
+      if (st.type!=="birthday") delete st.who;
+      if (st.type!=="trip" && st.type!=="custom") delete st.people;
+      if (st.lunar){ st.yearly = true; st.end = st.start; } else delete st.lunar;
+      delete st._lastTitle;
+      st.updatedBy = me(); st.updatedAt = Date.now(); if (!st.createdBy) st.createdBy = me();
+      try { await store.saveEvent(st); } catch(e){ return toast("저장 실패 · 인터넷을 확인해주세요"); }
+      closeSheet(); toast(isNew ? "가족 달력에 추가했어요" : "수정했어요");
+      selected = st.start; view = parse(st.start); view.setDate(1); render();
+    };
+  };
+  draw();
+}
+
+/* ----- 설정 ----- */
+$("#meBtn").onclick = openSettings;
+function openSettings(){
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  const notiState = !("Notification" in window) ? "unsupported" : Notification.permission;
+  openSheet(`<h2>설정<button class="iconbtn" id="cx">✕</button></h2>
+    <div class="field"><label>나는</label><div class="iconpick named" id="meSel">${people().map(m=>`<button data-m="${esc(m)}" class="${m===me()?"on":""}">${faceHTML(m)}<small>${esc(m)}</small></button>`).join("")}</div></div>
+    <div class="field"><label>얼굴 스티커 바꾸기 (눌러서 사진 선택)</label><div class="iconpick named" id="photoSel">${CFG.members.map(m=>`<button data-m="${esc(m)}">${faceHTML(m)}<small>${esc(m)}</small></button>`).join("")}</div>
+      <p class="note">사진을 고르면 동그란 스티커로 바뀌어 가족 모두에게 보여요.</p><input type="file" accept="image/*" id="photoIn" class="hidden"></div>
+    <button class="list-btn" id="notiBtn"><div class="ic" style="background:var(--accent)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></div>
+      <div>아침 7시 알림 받기<small>${notiState==="granted" && localStorage.getItem("fc_sub") ? "✅ 이 기기에서 알림을 받고 있어요" : notiState==="denied" ? "알림이 차단돼 있어요 · 아이폰 설정 > 알림에서 허용" : (!standalone && /iPhone|iPad/.test(navigator.userAgent)) ? "먼저 홈 화면에 추가해야 해요" : "눌러서 켜기"}</small></div></button>
+    <button class="list-btn" id="instBtn"><div class="ic" style="background:#4FB3E8"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></div><div>아이폰 홈 화면에 설치하기<small>${standalone?"✅ 앱으로 설치되어 있어요":"설치 방법 보기"}</small></div></button>
+`);
+  $("#cx").onclick = closeSheet;
+  $("#meSel").querySelectorAll("button").forEach(b => b.onclick = () => { localStorage.setItem("fc_me", b.dataset.m); render(); openSettings(); toast(`${b.dataset.m}(으)로 바꿨어요`); });
+  let target;
+  $("#photoSel").querySelectorAll("button").forEach(b => b.onclick = () => { target = b.dataset.m; $("#photoIn").click(); });
+  $("#photoIn").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    const url = await resizeImage(f, 176);
+    try { await store.savePhoto(target, url); memberPhotos[target] = url; render(); openSettings(); toast(`${target} 사진을 등록했어요`); } catch { toast("사진 저장 실패"); }
+  };
+  $("#notiBtn").onclick = enablePush;
+  $("#instBtn").onclick = showInstall;
+}
+// 사진 → 동그란 스티커 (흰 테두리, 투명 배경 PNG)
+function resizeImage(file, size){
+  return new Promise((res, rej) => {
+    const img = new Image(); img.onload = () => {
+      const c = document.createElement("canvas"); c.width = c.height = size; const g = c.getContext("2d");
+      const R = size/2, border = size*0.075;
+      const sz = Math.min(img.width, img.height), x = (img.width-sz)/2, y = Math.max(0, (img.height-sz)/2 - (img.height-sz)*0.25);
+      g.beginPath(); g.arc(R, R, R-1, 0, Math.PI*2); g.fillStyle = "#fff"; g.fill();
+      g.save(); g.beginPath(); g.arc(R, R, R-border, 0, Math.PI*2); g.clip();
+      g.drawImage(img, x, y, sz, sz, border, border, size-border*2, size-border*2); g.restore();
+      res(c.toDataURL("image/png")); URL.revokeObjectURL(img.src);
+    }; img.onerror = rej; img.src = URL.createObjectURL(file);
+  });
+}
+function showInstall(){
+  openSheet(`<h2>아이폰에 설치하기<button class="iconbtn" id="cx">✕</button></h2>
+    <div class="ev" style="cursor:default"><div class="ic" style="background:#4FB3E8;color:#fff;font-weight:800">1</div><div class="body"><div class="tt">Safari로 이 주소 열기</div><div class="dd">카카오톡 링크라면 우측 하단 ⋯ → "Safari로 열기"</div></div></div>
+    <div class="ev" style="cursor:default"><div class="ic" style="background:#4FB3E8;color:#fff;font-weight:800">2</div><div class="body"><div class="tt">아래쪽 공유 버튼 <span style="font-size:18px">⎋</span> 누르기</div><div class="dd">네모에서 화살표가 위로 나가는 모양</div></div></div>
+    <div class="ev" style="cursor:default"><div class="ic" style="background:#4FB3E8;color:#fff;font-weight:800">3</div><div class="body"><div class="tt">"홈 화면에 추가" 선택</div><div class="dd">안 보이면 목록을 아래로 내려보세요</div></div></div>
+    <div class="ev" style="cursor:default"><div class="ic" style="background:#4FB3E8;color:#fff;font-weight:800">4</div><div class="body"><div class="tt">홈 화면 아이콘으로 열고 알림 켜기</div><div class="dd">설정(오른쪽 위 내 얼굴) → 아침 7시 알림 받기</div></div></div>
+    <p class="note">안드로이드는 크롬 메뉴 ⋮ → "홈 화면에 추가" 또는 "앱 설치"를 누르면 돼요. 알림은 iOS 16.4 이상에서 지원돼요.</p>`);
+  $("#cx").onclick = closeSheet;
+}
+
+/* =================== 서비스워커 & 푸시 =================== */
+async function registerSW(){
+  if (!("serviceWorker" in navigator)) return;
+  try { await navigator.serviceWorker.register("sw.js"); } catch(e){ console.warn(e); }
+}
+function b64ToU8(b){ const p = "=".repeat((4 - b.length % 4) % 4); const r = atob((b+p).replace(/-/g,"+").replace(/_/g,"/")); return Uint8Array.from([...r].map(c=>c.charCodeAt(0))); }
+async function enablePush(){
+  const ios = /iPhone|iPad/.test(navigator.userAgent), standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (ios && !standalone) return showInstall();
+  if (!("Notification" in window) || !("PushManager" in window)) return toast("이 기기는 알림을 지원하지 않아요");
+  if (DEMO) return toast("데모 모드에서는 알림을 켤 수 없어요");
+  if (!CFG.vapidPublicKey) return toast("config.js 에 vapidPublicKey 를 넣어주세요");
+  const perm = await Notification.requestPermission();
+  if (perm !== "granted") return toast("알림이 허용되지 않았어요");
+  const reg = await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64ToU8(CFG.vapidPublicKey)});
+  const json = sub.toJSON(), id = (await sha256(json.endpoint)).slice(0,32);
+  await store.saveSub(id, {sub:json, member:me(), ua:navigator.userAgent.slice(0,120), updatedAt:Date.now()});
+  localStorage.setItem("fc_sub", id);
+  toast("이제 아침 7시에 알림이 와요 🔔"); openSettings();
+}
+
+boot();
+</script>
+</body>
+</html>

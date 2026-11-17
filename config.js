@@ -40,6 +40,7 @@ window.APP_CONFIG = {
     "보현": "icons/faces/bh.png",
     "쫑이": "icons/faces/jj.png",
   },
+  weddingIcon: "icons/faces/wedding.png",   // 엄마 아빠 결혼기념일 아이콘
 
   // 가족 생일 — 앱을 처음 열 때 한 번만 달력에 자동으로 들어가요 (lunar: true = 음력)
   birthdays: [
@@ -50,5 +51,6 @@ window.APP_CONFIG = {
     { name: "보현", date: "2003-08-11" },
     { name: "외할아버지", date: "2000-04-15", lunar: true, type: "grandpa" },  // 연도는 상관없어요
     { name: "쫑이", date: "2014-11-30", memo: "우리 집에 온 날 (추정)" },
+    { name: "엄마아빠결혼", date: "1997-10-05", type: "anniv" },
   ],
 };

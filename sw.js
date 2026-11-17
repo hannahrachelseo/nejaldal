@@ -1,6 +1,6 @@
 // 너잘달 서비스워커: 오프라인 캐시 + 아침 알림 수신
-const CACHE = "family-cal-v6";
-const SHELL = ["./", "index.html", "config.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/badge.png",
+const CACHE = "family-cal-v8";
+const SHELL = ["./", "index.html", "config.js", "lunar-table.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/badge.png", "icons/faces/wedding.png",
   "icons/faces/dad.png", "icons/faces/mom.png", "icons/faces/hn.png", "icons/faces/hy.png", "icons/faces/bh.png", "icons/faces/jj.png"];
 
 self.addEventListener("install", e => {
@@ -42,7 +42,7 @@ self.addEventListener("push", e => {
   e.waitUntil(self.registration.showNotification(d.title || "너잘달", {
     body: d.body || "",
     icon: "icons/icon-192.png",
-    badge: "icons/badge.png",
+    badge: "icons/badge.png", "icons/faces/wedding.png",
     tag: d.tag || "family-cal",
     data: {url: d.url || "./"},
   }));

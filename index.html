@@ -13,6 +13,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="icons/icon-192.png">
 <script src="config.js"></script>
+<script src="lunar-table.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style>@font-face{font-family:"BMHanna11";src:local("배달의민족 한나는 열한살"),local("BMHANNA11yrsold"),url("https://cdn.jsdelivr.net/npm/@kfonts/bm-hanna-11yrs@0.2.1/BMHANNA_11yrs_ttf.woff2") format("woff2"),url("https://cdn.jsdelivr.net/npm/@kfonts/bm-hanna-11yrs@0.2.1/BMHANNA_11yrs_ttf.woff") format("woff");font-weight:400;font-display:swap}</style>
 <style>
@@ -62,6 +63,8 @@ input,select{font-family:-apple-system,"Apple SD Gothic Neo",sans-serif;font-wei
 .filter button.on{opacity:1;color:var(--apricot-d)}
 .filter .all{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:var(--shadow);font-size:13px;color:var(--apricot-d)}
 .likes{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--pink-d)}
+.ic.face.wed{transform:none}
+.bar .ic.face.wed{width:22px;height:22px}
 .tilt-0{transform:rotate(-4deg)} .tilt-1{transform:rotate(3deg)} .tilt-2{transform:rotate(-2deg)} .tilt-3{transform:rotate(4deg)} .tilt-4{transform:rotate(-3deg)}
 
 /* ---------- 잠금 화면 ---------- */
@@ -139,6 +142,9 @@ header .title span{font-family:var(--hand);color:var(--sub);font-size:18px;margi
 .bar.one{justify-content:center;padding:0}
 .bar.one .t{display:none}
 .bar.one .ic,.bar.one .ic.face{width:22px;height:22px}
+.bar.one.ann{justify-content:flex-start;padding:0 3px 0 1px;gap:1px}
+.bar.one.ann .t{display:inline;font-size:10.5px;letter-spacing:-.3px}
+.bar.one.ann .ic.face.wed{width:19px;height:19px}
 .bar.cont-l{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:0}
 .bar.cont-r{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:0}
 
@@ -331,6 +337,7 @@ function evIconHTML(ev){
   const rel = relatedOf(ev);
   if (ev.type === "trip" && rel.length) return withBadge(faceHTML(rel[0]), "trip");
   if (ev.type === "birthday" && rel.length) return withBadge(faceHTML(rel[0]), "birthday");
+  if (ev.type === "anniv" && CFG.weddingIcon) return `<div class="ic face wed"><img src="${esc(CFG.weddingIcon)}" alt="엄마 아빠"></div>`;
   if (ev.type !== "custom") return catIconHTML(ev.type);
   const icon = ev.icon || {kind:"face", value: ev.createdBy};
   if (icon.kind === "emoji") return `<div class="ic" style="background:var(--apricot-l)"><span class="emo">${esc(icon.value)}</span></div>`;
@@ -362,15 +369,28 @@ const lunarCache = {};
 let dangiFmt = null;
 try { dangiFmt = new Intl.DateTimeFormat("en-u-ca-dangi", {timeZone:"UTC", year:"numeric", month:"numeric", day:"numeric"});
       if (dangiFmt.resolvedOptions().calendar !== "dangi") dangiFmt = null; } catch { dangiFmt = null; }
+// 1) 내장 변환표(lunar-table.js)로 먼저 계산 → 어떤 폰·브라우저에서도 똑같이 나와요
+// 2) 표 범위를 벗어나면 브라우저 내장 음력 달력으로 계산
+let lunarRows = null;
+function lunarFromTable(y, m, d){
+  const T = window.LUNAR_TABLE; if (!T) return null;
+  if (!lunarRows) lunarRows = T.rows.split(";").map(r => r.split(",").map(v => parseInt(v, 36)));
+  const row = lunarRows[y - T.from]; if (!row || !row[m-1]) return null;
+  const v = row[m-1], start = v >> 1, len = (v & 1) ? 30 : 29;
+  const t = Date.UTC(1900,0,1) + (start + Math.min(d, len) - 1) * 86400000;
+  return new Date(t).toISOString().slice(0,10);
+}
 function lunarToSolar(y, m, d){
   const k = `${y}-${m}-${d}`; if (k in lunarCache) return lunarCache[k];
+  const fromTable = lunarFromTable(y, m, d);
+  if (fromTable) return lunarCache[k] = fromTable;
   let res = null, last = null;
   if (dangiFmt) for (let t = Date.UTC(y,0,10); t < Date.UTC(y+1,2,5); t += 86400000){
     const p = {}; for (const x of dangiFmt.formatToParts(new Date(t))) p[x.type] = x.value;
-    if (+p.relatedYear !== y || p.month !== String(m)) { if (last) break; continue; }
+    if (+(p.relatedYear || p.year) !== y || p.month !== String(m)) { if (last) break; continue; }
     last = t; if (+p.day === d) { res = t; break; }
   }
-  if (!res && last) res = last;            // 30일이 없는 달이면 그 달 마지막 날
+  if (!res && last) res = last;
   const out = res ? new Date(res).toISOString().slice(0,10) : null;
   return lunarCache[k] = out;
 }
@@ -504,11 +524,11 @@ async function seedBirthdays(){
   for (const b of list){
     const flag = `seed-${b.name}`;
     if (await store.getFlag(flag)) continue;   // 한 번 넣은 생일은 지워도 다시 안 생겨요
-    const g = b.type === "grandpa";
-    const ev = {id:`seed-bday-${b.name}`, type:g?"grandpa":"birthday", who:b.name, title:g?"외할아버지 생신":bdayTitle(b.name), start:b.date, end:b.date,
+    const type = b.type || "birthday", g = type !== "birthday";
+    const ev = {id:`seed-bday-${b.name}`, type, who:b.name, title: g ? CATS[type].title : bdayTitle(b.name), start:b.date, end:b.date,
       yearly:true, lunar:!!b.lunar, notify:true, wbh:null, memo:b.memo||"", createdBy:"", updatedAt:Date.now()};
-    delete ev.wbh; if (g) delete ev.who; await store.saveEvent(ev);
-    await store.setFlag(flag);
+    delete ev.wbh; if (g) delete ev.who;
+    try { await store.saveEvent(ev); await store.setFlag(flag); } catch(e){ console.warn("seed", b.name, e); }
   }
 }
 
@@ -557,8 +577,8 @@ function renderMonth(){
       if (lane < 0){ lanes.push([]); lane = lanes.length-1; }
       lanes[lane].push([c0,c1]);
       if (lane >= MAXL){ for (let c=c0;c<=c1;c++) hidden[c]++; continue; }
-      const cls = (o.start < ws ? " cont-l":"") + (o.end > we ? " cont-r":"") + (c0===c1 ? " one":"");
-      bars.push(`<div class="bar${cls}" style="grid-column:${c0+1}/${c1+2};grid-row:${lane+2};background:${evColor(o.ev)[0]};color:${evColor(o.ev)[1]}">${evIconHTML(o.ev)}<span class="t">${esc(shortTitle(o.ev))}</span></div>`);
+      const cls = (o.start < ws ? " cont-l":"") + (o.end > we ? " cont-r":"") + (c0===c1 ? " one":"") + (o.ev.type==="anniv" ? " ann":"");
+      bars.push(`<div class="bar${cls}" style="grid-column:${c0+1}/${c1+2};grid-row:${lane+2};background:${evColor(o.ev)[0]};color:${evColor(o.ev)[1]}">${evIconHTML(o.ev)}<span class="t">${esc(shortTitle(o.ev, o.start))}</span></div>`);
     }
     let days = "";
     for (let i=0;i<7;i++){
@@ -574,7 +594,9 @@ function renderMonth(){
     selected = el.dataset.d; render();
   });
 }
-function shortTitle(ev){
+function annivN(ev, start){ const n = +String(start||"").slice(0,4) - +ev.start.slice(0,4); return n > 0 ? n : 0; }
+function shortTitle(ev, start){
+  if (ev.type==="anniv" && annivN(ev,start)) return `${annivN(ev,start)}년`;
   if (ev.type==="wbh"){ const who = CFG.wayBackHome.filter(n => ev.wbh?.[n]); return who.length ? who.join("·")+" 귀가" : "Way Back Home"; }
   return ev.title || CATS[ev.type].label;
 }
@@ -591,7 +613,7 @@ function evCard(o){
   const nl = Object.keys(ev.likes||{}).length, nc = (ev.comments||[]).length;
   if (nl) chips += `<span class="chip" style="background:var(--pink-l);color:var(--pink-d)">♥ ${nl}</span>`;
   if (nc) chips += `<span class="chip" style="background:var(--sky-l);color:var(--sky-d)">💬 ${nc}</span>`;
-  return `<button class="ev" data-id="${esc(ev.id)}" data-s="${o.start}">${evIconHTML(ev)}<div class="body"><div class="tt">${esc(ev.title || CATS[ev.type].title || CATS[ev.type].label)}</div>
+  return `<button class="ev" data-id="${esc(ev.id)}" data-s="${o.start}">${evIconHTML(ev)}<div class="body"><div class="tt">${esc(ev.type==="anniv" && annivN(ev,o.start) ? `엄마 아빠 결혼 ${annivN(ev,o.start)}주년` : (ev.title || CATS[ev.type].title || CATS[ev.type].label))}</div>
     <div class="dd">${fmtRange(o.start,o.end)}${ev.memo?` · ${esc(ev.memo)}`:""}</div>${chips?`<div class="chips">${chips}</div>`:""}</div>
     <div class="side">${badge?`<span class="dday ${now?"now":""}">${badge}</span>`:""}${facesStack(relatedOf(ev))}</div></button>`;
 }
@@ -606,7 +628,7 @@ function openDetail(id, start){
   const comments = (ev.comments||[]).slice().sort((a,b)=>a.at-b.at);
   const keepDraft = $("#cmtIn") ? $("#cmtIn").value : "";
   openSheet(`<h2><span></span><button class="iconbtn" id="cx" aria-label="닫기">✕</button></h2>
-    <div class="dt-head">${evIconHTML(ev)}<div><div class="dt-title">${esc(ev.title || CATS[ev.type].title || CATS[ev.type].label)}</div>
+    <div class="dt-head">${evIconHTML(ev)}<div><div class="dt-title">${esc(ev.type==="anniv" && annivN(ev,occ.start) ? `엄마 아빠 결혼 ${annivN(ev,occ.start)}주년 💍` : (ev.title || CATS[ev.type].title || CATS[ev.type].label))}</div>
       <div class="dd">${fmtRange(occ.start, occ.end)}${ev.lunar?` · 음력 ${+ev.start.slice(5,7)}월 ${+ev.start.slice(8)}일`:""}</div></div></div>
     ${ev.memo?`<div class="dt-memo">${esc(ev.memo)}</div>`:""}
     ${rel.length?`<div class="dt-row"><span class="lb">함께하는 가족</span><div class="dt-people">${rel.map(n=>`<span>${faceHTML(n)}<small>${esc(n)}</small></span>`).join("")}</div></div>`:""}
@@ -657,7 +679,7 @@ function showTodayBanner(){
   const list = events.flatMap(ev => occurrences(ev, t, t));
   const key = "fc_banner_" + t;
   if (!list.length || sessionStorage.getItem(key)) { $("#bannerWrap").innerHTML = ""; return; }
-  const txt = list.map(o => `${shortTitle(o.ev)}`).join(", ");
+  const txt = list.map(o => o.ev.type==="anniv" && annivN(o.ev,o.start) ? `엄마 아빠 결혼 ${annivN(o.ev,o.start)}주년 💍` : shortTitle(o.ev, o.start)).join(", ");
   $("#bannerWrap").innerHTML = `<div class="banner"><div class="bi">${evIconHTML(list[0].ev)}</div><div class="bt"><small>오늘의 가족 행사</small><b>${esc(txt)}</b></div><button class="x" aria-label="닫기">×</button></div>`;
   $("#bannerWrap .x").onclick = () => { sessionStorage.setItem(key,"1"); $("#bannerWrap").innerHTML=""; };
 }
@@ -696,7 +718,7 @@ function openEditor(ev, date){
     const c = CATS[st.type];
     const autoN = c.autoNotify;
     openSheet(`<h2>${isNew?"새 가족 일정":"일정 수정"}<button class="iconbtn" id="cx" aria-label="닫기">✕</button></h2>
-      <div class="cats">${Object.keys(CATS).map(k => `<button class="cat ${k===st.type?"on":""}" data-k="${k}">${catIconHTML(k)}${esc(CATS[k].label).replace("\n","<br>")}</button>`).join("")}</div>
+      <div class="cats">${Object.keys(CATS).filter(k => !["anniv","grandpa"].includes(k) || k===st.type).map(k => `<button class="cat ${k===st.type?"on":""}" data-k="${k}">${catIconHTML(k)}${esc(CATS[k].label).replace("\n","<br>")}</button>`).join("")}</div>
 
       ${st.type==="birthday" ? `<div class="field"><label>누구 생일인가요?</label><div class="iconpick named" id="bwhoPick">
         ${CFG.members.map(m=>`<button data-m="${esc(m)}" class="${!etcMode && m===birthdayWho?"on":""}">${faceHTML(m)}<small>${esc(m)}</small></button>`).join("")}
@@ -751,7 +773,7 @@ function openEditor(ev, date){
     const lunNote = () => { if (!$("#lunNote")) return; const v = $("#sd").value; if (!v) return;
       const [,m,d] = v.split("-").map(Number), y = new Date().getFullYear();
       const a = lunarToSolar(y,m,d), b = lunarToSolar(y+1,m,d), f = x => x ? `${+x.slice(5,7)}월 ${+x.slice(8)}일` : "?";
-      $("#lunNote").textContent = dangiFmt ? `음력 ${m}월 ${d}일 → 올해 양력 ${f(a)} · 내년 ${f(b)}` : "이 기기는 음력 변환을 지원하지 않아요"; };
+      $("#lunNote").textContent = (window.LUNAR_TABLE || dangiFmt) ? `음력 ${m}월 ${d}일 → 올해 양력 ${f(a)} · 내년 ${f(b)}` : "이 기기는 음력 변환을 지원하지 않아요"; };
     $("#sd").onchange = () => { if ($("#ed") && $("#ed").value < $("#sd").value) $("#ed").value = $("#sd").value; lunNote(); };
     lunNote();
     $("#lun") && ($("#lun").onchange = () => { sync(); if (st.lunar){ st.yearly = true; } draw(); });

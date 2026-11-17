@@ -138,7 +138,16 @@ header .title span{font-family:var(--hand);color:var(--sub);font-size:18px;margi
 .bar{z-index:1;margin:0 2px;height:24px;border-radius:12px;font-size:12px;display:flex;align-items:center;gap:3px;padding:0 6px 0 2px;overflow:hidden;white-space:nowrap;pointer-events:none;font-family:var(--hand)}
 .bar .ic{width:18px;height:18px}
 .bar .ic.face{width:20px;height:20px}
-.bar .t{overflow:hidden;text-overflow:ellipsis}
+.bar .t{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.bar{overflow:visible!important}
+.bar .ic .badge{width:13px;height:13px;right:-4px;bottom:-3px;border-width:1.5px}
+.bar .ic .badge svg{width:9px;height:9px}
+.ic .badge.eb{font-size:60%;line-height:1;display:grid;place-items:center}
+.bar .ic .badge.eb{font-size:8px}
+.bfaces{display:flex;align-items:center;flex:none}
+.bfaces .bf{width:18px;height:18px;margin-left:-5px}
+.bfaces>.ic:first-child{position:relative;z-index:3}
+.bar .t{margin-left:3px}
 .bar.one{justify-content:center;padding:0}
 .bar.one .t{display:none}
 .bar.one .ic,.bar.one .ic.face{width:22px;height:22px}
@@ -324,9 +333,17 @@ function relatedOf(ev){
   if (ev.type==="anniv") return ["아빠","엄마"].filter(n => CFG.members.includes(n));
   return (ev.people||[]).filter(n => CFG.members.includes(n));
 }
-function withBadge(faceHtml, type){
-  const c = CATS[type];
-  return faceHtml.replace(/<\/div>$/, `<span class="badge" style="background:${c.bg};color:${c.fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SVG[type]}</svg></span></div>`);
+function badgeHTML(ev){
+  const type = typeof ev === "string" ? ev : ev.type, c = CATS[type];
+  if (typeof ev !== "string" && type === "custom" && ev.icon?.kind === "emoji")
+    return `<span class="badge eb" style="background:#fff">${esc(ev.icon.value)}</span>`;
+  return `<span class="badge" style="background:${c.bg};color:${c.fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SVG[type]}</svg></span>`;
+}
+function withBadge(faceHtml, ev){ return faceHtml.replace(/<\/div>$/, badgeHTML(ev) + `</div>`); }
+function barIcons(ev, span){
+  const rel = relatedOf(ev);
+  if (ev.type === "anniv" || rel.length < 2 || span < 2) return evIconHTML(ev);
+  return `<span class="bfaces">${evIconHTML(ev)}${rel.slice(1, Math.min(3, span)).map(n => faceHTML(n, "ic bf")).join("")}</span>`;
 }
 function facesStack(names, max=4){
   if (!names.length) return "";
@@ -335,8 +352,7 @@ function facesStack(names, max=4){
 }
 function evIconHTML(ev){
   const rel = relatedOf(ev);
-  if (ev.type === "trip" && rel.length) return withBadge(faceHTML(rel[0]), "trip");
-  if (ev.type === "birthday" && rel.length) return withBadge(faceHTML(rel[0]), "birthday");
+  if (rel.length && ["trip","birthday","custom","wbh"].includes(ev.type)) return withBadge(faceHTML(rel[0]), ev);
   if (ev.type === "anniv" && CFG.weddingIcon) return `<div class="ic face wed"><img src="${esc(CFG.weddingIcon)}" alt="엄마 아빠"></div>`;
   if (ev.type !== "custom") return catIconHTML(ev.type);
   const icon = ev.icon || {kind:"face", value: ev.createdBy};
@@ -578,7 +594,7 @@ function renderMonth(){
       lanes[lane].push([c0,c1]);
       if (lane >= MAXL){ for (let c=c0;c<=c1;c++) hidden[c]++; continue; }
       const cls = (o.start < ws ? " cont-l":"") + (o.end > we ? " cont-r":"") + (c0===c1 ? " one":"") + (o.ev.type==="anniv" ? " ann":"");
-      bars.push(`<div class="bar${cls}" style="grid-column:${c0+1}/${c1+2};grid-row:${lane+2};background:${evColor(o.ev)[0]};color:${evColor(o.ev)[1]}">${evIconHTML(o.ev)}<span class="t">${esc(shortTitle(o.ev, o.start))}</span></div>`);
+      bars.push(`<div class="bar${cls}" style="grid-column:${c0+1}/${c1+2};grid-row:${lane+2};background:${evColor(o.ev)[0]};color:${evColor(o.ev)[1]}">${barIcons(o.ev, c1-c0+1)}<span class="t">${esc(shortTitle(o.ev, o.start))}</span></div>`);
     }
     let days = "";
     for (let i=0;i<7;i++){
@@ -738,10 +754,10 @@ function openEditor(ev, date){
       ${st.type==="trip" || st.type==="custom" ? `<div class="field"><label>누구와 관련된 일정인가요? (여러 명 선택)</label><div class="iconpick named" id="peoplePick">
         ${CFG.members.map(m=>`<button data-m="${esc(m)}" class="${(st.people||[]).includes(m)?"on":""}">${faceHTML(m)}<small>${esc(m)}</small></button>`).join("")}</div></div>` : ""}
 
-      ${st.type==="custom" ? `<div class="field"><label>아이콘</label><div class="iconpick">
+      ${st.type==="custom" ? `<div class="field"><label>아이콘</label><div class="iconpick" id="iconPick">
         ${CFG.members.map(m=>`<button data-ik="face" data-iv="${esc(m)}" class="${st.icon?.kind==="face"&&st.icon.value===m?"on":""}" title="${esc(m)}">${faceHTML(m)}</button>`).join("")}
         ${EMOJIS.map(e=>`<button data-ik="emoji" data-iv="${e}" class="${st.icon?.kind==="emoji"&&st.icon.value===e?"on":""}"><div class="ic" style="background:var(--apricot-l)"><span class="emo">${e}</span></div></button>`).join("")}
-      </div><p class="note">기본은 일정을 추가한 사람의 얼굴이에요</p></div>` : ""}
+      </div><p class="note">관련된 사람을 고르면 그 사람 얼굴에 이 아이콘이 작게 붙어요. 아무도 안 고르면 이 아이콘이 그대로 보여요.</p></div>` : ""}
 
       ${st.type!=="wbh" && st.type!=="trip" && !st.lunar ? `<label class="toggle"><div>매년 반복<small>생일·기념일은 해마다 자동으로 표시돼요</small></div><span class="sw"><input type="checkbox" id="yr" ${st.yearly?"checked":""}><span></span></span></label>` : ""}
 
@@ -785,7 +801,7 @@ function openEditor(ev, date){
       $("#bwhoPick").querySelectorAll("button").forEach(x => x.classList.toggle("on", x===b));
       $("#betcW").classList.toggle("hidden", !etcMode); if (etcMode) $("#betc").focus(); });
     $("#sheetBody").querySelectorAll(".checks input").forEach(i => i.onchange = () => { st.wbh = st.wbh||{}; st.wbh[i.dataset.n] = i.checked; i.closest("label").classList.toggle("on", i.checked); });
-    $("#sheetBody").querySelectorAll(".iconpick button").forEach(b => b.onclick = () => { st.icon = {kind:b.dataset.ik, value:b.dataset.iv}; $("#sheetBody").querySelectorAll(".iconpick button").forEach(x=>x.classList.toggle("on", x===b)); });
+    $("#sheetBody").querySelectorAll("#iconPick button").forEach(b => b.onclick = () => { st.icon = {kind:b.dataset.ik, value:b.dataset.iv}; $("#sheetBody").querySelectorAll("#iconPick button").forEach(x=>x.classList.toggle("on", x===b)); });
     $("#del") && ($("#del").onclick = async () => { if (!confirm("이 일정을 삭제할까요?")) return; await store.deleteEvent(st.id); closeSheet(); toast("삭제했어요"); });
     $("#sv").onclick = async () => {
       sync();

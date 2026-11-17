@@ -1,0 +1,39 @@
+name: 아침 7시 가족 알림
+
+on:
+  schedule:
+    - cron: "50 21 * * *"   # UTC 21:50 = 한국시간 06:50 (GitHub 지연을 감안해 10분 일찍 시작)
+  workflow_dispatch:
+    inputs:
+      test:
+        description: "테스트 알림 보내기 (yes 입력)"
+        required: false
+        default: ""
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: notify
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --omit=dev --no-audit --no-fund
+      - name: 7시까지 기다리기
+        if: github.event_name == 'schedule'
+        run: |
+          now=$(TZ=Asia/Seoul date +%s)
+          target=$(TZ=Asia/Seoul date -d "07:00" +%s)
+          wait=$(( target - now ))
+          if [ $wait -gt 0 ] && [ $wait -lt 1800 ]; then echo "⏳ ${wait}초 대기"; sleep $wait; fi
+      - run: node send.mjs
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FAMILY_KEY: ${{ secrets.FAMILY_KEY }}
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          APP_URL: ${{ vars.APP_URL }}
+          TEST: ${{ github.event.inputs.test == 'yes' && '1' || '' }}

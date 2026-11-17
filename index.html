@@ -895,7 +895,18 @@ function showInstall(){
 /* =================== 서비스워커 & 푸시 =================== */
 async function registerSW(){
   if (!("serviceWorker" in navigator)) return;
-  try { await navigator.serviceWorker.register("sw.js"); } catch(e){ console.warn(e); }
+  // 새 버전이 설치되면 화면을 한 번 자동으로 새로고침
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloaded) return; reloaded = true; location.reload();
+  });
+  try {
+    const reg = await navigator.serviceWorker.register("sw.js", {updateViaCache: "none"});
+    reg.update();
+    // 앱을 다시 열 때(백그라운드에서 돌아올 때)마다 새 버전 확인
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") reg.update(); });
+  } catch(e){ console.warn(e); }
 }
 function b64ToU8(b){ const p = "=".repeat((4 - b.length % 4) % 4); const r = atob((b+p).replace(/-/g,"+").replace(/_/g,"/")); return Uint8Array.from([...r].map(c=>c.charCodeAt(0))); }
 async function enablePush(){

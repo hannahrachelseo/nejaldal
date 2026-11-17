@@ -1,5 +1,5 @@
 // 너잘달 서비스워커: 오프라인 캐시 + 아침 알림 수신
-const CACHE = "family-cal-v10";
+const CACHE = "family-cal-v11";
 const SHELL = ["./", "index.html", "config.js", "lunar-table.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/badge.png", "icons/faces/wedding.png",
   "icons/faces/dad.png", "icons/faces/mom.png", "icons/faces/hn.png", "icons/faces/hy.png", "icons/faces/bh.png", "icons/faces/jj.png"];
 
@@ -22,7 +22,8 @@ self.addEventListener("fetch", e => {
   }
   if (url.origin !== location.origin) return;   // Firebase 데이터 통신은 Firebase가 알아서 오프라인 처리
   e.respondWith(
-    fetch(e.request).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); return r; })
+    // 휴대폰에 저장된 옛날 파일을 쓰지 않고 항상 서버에서 새 버전을 확인
+    fetch(new Request(url.href, {cache: "no-cache", credentials: "same-origin"})).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); return r; })
       .catch(() => caches.match(e.request, {ignoreSearch: true}).then(r => r || caches.match("index.html")))
   );
 });
@@ -42,7 +43,7 @@ self.addEventListener("push", e => {
   e.waitUntil(self.registration.showNotification(d.title || "너잘달", {
     body: d.body || "",
     icon: "icons/icon-192.png",
-    badge: "icons/badge.png", "icons/faces/wedding.png",
+    badge: "icons/badge.png",
     tag: d.tag || "family-cal",
     data: {url: d.url || "./"},
   }));

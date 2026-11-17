@@ -14,44 +14,13 @@
 
 ---
 
-## 1단계. GitHub에 올려서 앱 주소 만들기
+## 1~4단계 ✅ 완료
 
-1. [github.com](https://github.com)에 가입하고 로그인
-2. 오른쪽 위 **+** → **New repository**
-   - 이름: `family-calendar` (원하는 대로)
-   - **Public** 선택 → **Create repository**
-3. **uploading an existing file** 클릭 → 압축을 푼 폴더 안의 **모든 파일과 폴더**를 끌어다 놓기 → **Commit changes**
-   - ⚠️ `.github` 폴더가 숨김 폴더라 안 보일 수 있어요. 맥은 Finder에서 `Cmd + Shift + .` 을 누르면 보여요.
-4. 저장소의 **Settings → Pages** → Source: **Deploy from a branch**, Branch: **main / (root)** → **Save**
-5. 1~2분 뒤 같은 화면 위쪽에 나오는 주소가 우리 앱 주소예요.
-   예) `https://내아이디.github.io/family-calendar/`
+- 앱 주소: **https://hannahrachelseo.github.io/nejaldal/**
+- Firebase 프로젝트 `nejaldal` (서울), 보안 규칙, 웹 앱 설정, 알림 공개키가 `config.js`에 들어가 있어요.
+- 가족 비밀번호는 가족끼리만 알고 있어요. 가족들은 앱을 **처음 설치할 때 한 번만** 입력해요.
 
-## 2단계. Firebase로 가족 공유 저장소 만들기
-
-1. [console.firebase.google.com](https://console.firebase.google.com) → 구글 계정으로 로그인 → **프로젝트 만들기** (애널리틱스는 꺼도 돼요)
-2. 왼쪽 메뉴 **빌드 → Firestore Database → 데이터베이스 만들기**
-   - 위치: **asia-northeast3 (서울)**
-   - **프로덕션 모드**로 시작
-3. Firestore 화면 위쪽 **규칙** 탭 → 내용을 모두 지우고 `firestore.rules` 파일 내용을 붙여넣기 → **게시**
-4. 프로젝트 개요 옆 ⚙️ → **프로젝트 설정** → 아래쪽 **내 앱**에서 `</>` (웹) 아이콘 → 앱 이름 입력 → **앱 등록**
-5. 화면에 나오는 `firebaseConfig = { ... }` 안의 값 6개를 `config.js`의 `firebase: { ... }` 에 그대로 옮겨 적기
-
-## 3단계. 가족 비밀번호 (이미 설정됨 ✅)
-
-비밀번호 **hanna1224** 가 `config.js` 에 이미 들어가 있어요. 이 단계는 건너뛰세요.
-5단계에서 쓸 `FAMILY_KEY` 값은 아래와 같아요.
-
-```
-1646e69245efef95f44d1565414f91211253b941b1dd8bc06f8c843049820dd3
-```
-
-> 가족들은 **앱을 처음 설치할 때 한 번만** 비밀번호를 입력해요. 그 뒤로는 바로 열려요.
-
-## 4단계. 아침 7시 알림 키 만들기
-
-1. 압축 푼 폴더의 `tools/vapid.html`을 크롬이나 사파리로 열기 → **키 만들기**
-2. ① 공개키 → `config.js`의 `vapidPublicKey`에 붙여넣고 Commit (5단계에도 사용)
-3. ② 비밀키 → 5단계에서만 사용 (어디에도 공유하지 마세요)
+> 🔐 `FAMILY_KEY` 와 알림 비밀키(`VAPID_PRIVATE_KEY`)는 **절대 이 저장소 파일에 적지 마세요.** GitHub의 Secrets 에만 넣어요.
 
 ## 5단계. GitHub에 비밀값 넣기 (아침 알림 발송용)
 
@@ -62,12 +31,12 @@
 | 이름 | 넣을 값 |
 |---|---|
 | `FIREBASE_SERVICE_ACCOUNT` | 다운로드한 JSON 파일을 메모장으로 열어서 **전체 내용** |
-| `FAMILY_KEY` | 3단계의 값 |
-| `VAPID_PUBLIC_KEY` | 4단계의 ① 공개키 |
-| `VAPID_PRIVATE_KEY` | 4단계의 ② 비밀키 |
+| `FAMILY_KEY` | 따로 전달받은 가족 키 |
+| `VAPID_PUBLIC_KEY` | `config.js` 의 vapidPublicKey 값 |
+| `VAPID_PRIVATE_KEY` | 따로 전달받은 알림 비밀키 |
 
 4. 옆의 **Variables** 탭 → **New repository variable**
-   - 이름 `APP_URL`, 값: 1단계에서 받은 앱 주소
+   - 이름 `APP_URL`, 값: `https://hannahrachelseo.github.io/nejaldal/`
 
 ## 6단계. 가족 폰에 설치하기 📱
 

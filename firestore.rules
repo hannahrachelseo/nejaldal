@@ -3,7 +3,7 @@ rules_version = '2';
 // 키를 모르면 목록 조회도, 읽기/쓰기도 할 수 없어요. (비밀번호를 바꾸면 아래 값도 바꿔야 해요)
 service cloud.firestore {
   match /databases/{database}/documents {
-    function famOk(f) { return f == '1646e69245efef95f44d1565414f91211253b941b1dd8bc06f8c843049820dd3'; }
+    function famOk(f) { return f == '여기에_FAMILY_KEY'; }
     match /families/{fam}/events/{id} {
       allow read, delete: if famOk(fam);
       allow create, update: if famOk(fam)
